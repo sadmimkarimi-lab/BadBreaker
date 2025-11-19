@@ -427,22 +427,22 @@
 function brickSizeByLevel(lvl) {
   let scale = 1; // اندازه پایه آجرها
 
-  // در مرحله 1 تا 10 آجرها از 3 به 1 کوچک میشوند
+  // مراحل 1 تا 10: آجرها از 3 به 1 کوچک می‌شوند
   if (lvl <= 10) {
     scale = 3 - (0.2 * (lvl - 1)); // از 3 به 1 کاهش می‌یابد
   } 
-  // در مرحله 11 تا 20 آجرها از 2 به 1 کوچک میشوند
+  // مراحل 11 تا 20: آجرها از 2 به 1 کوچک می‌شوند
   else if (lvl <= 20) {
     scale = 2 - (0.1 * (lvl - 11)); // از 2 به 1 کاهش می‌یابد
   } 
-  // در مرحله 21 تا 30 آجرها از 1.5 به 1 کوچک میشوند
+  // مراحل 21 تا 30: آجرها از 1.5 به 1 کوچک می‌شوند
   else if (lvl <= 30) {
     scale = 1.5 - (0.05 * (lvl - 21)); // از 1.5 به 1 کاهش می‌یابد
   }
 
   return scale;
 }
-    
+
 function buildPatternBricks(name, lvl) {
   let grid = [];
   const scale = brickSizeByLevel(lvl); // اندازه آجرها بر اساس سطح
@@ -515,7 +515,6 @@ function buildPatternBricks(name, lvl) {
 
   return out;
 }
-
     function makeRandomLevel() {
       const rows = 4 + level;
       const cols = 8;
