@@ -562,7 +562,7 @@ function buildPatternBricks(name, lvl) {
     function buildLevel() {
   const name = patternForLevel(level);
   if (name) {
-    bricks = buildPatternBricks(name, level);  // اضافه کردن level
+    bricks = buildPatternBricks(name, level);  // اینجا level رو اضافه کن
     flashHint("مرحله ویژه: " + name + " ✨");
   } else {
     bricks = makeRandomLevel();
