@@ -418,11 +418,11 @@
     // الگوهای مرحله‌ای بر اساس شکل‌ها:
     // مراحل ۱–۱۰: مربع، ۱۱–۲۰: دایره، ۲۱–۳۰: قلب
     function patternForLevel(lvl) {
-      if (lvl <= 10) return "SQUARE";   // مراحل ۱ تا ۱۰: مربع
-      if (lvl <= 20) return "CIRCLE";   // مراحل ۱۱ تا ۲۰: دایره
-      if (lvl <= 30) return "HEART";    // مراحل ۲۱ تا ۳۰: قلب
-      return null;                      // بعد از آن، از الگوی تصادفی استفاده می‌کنیم (makeRandomLevel)
-    }
+  if (lvl <= 10) return "SQUARE";   // مراحل ۱ تا ۱۰: مربع
+  if (lvl <= 20) return "CIRCLE";   // مراحل ۱۱ تا ۲۰: دایره
+  if (lvl <= 30) return "HEART";    // مراحل ۲۱ تا ۳۰: قلب
+  return "SQUARE";  // پیش‌فرض برای لول‌های بعدی
+}
 
     function buildPatternBricks(name) {
       let grid = [];
