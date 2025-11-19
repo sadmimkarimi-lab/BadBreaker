@@ -445,7 +445,7 @@ function brickSizeByLevel(lvl) {
 
 function buildPatternBricks(name, lvl) {
   let grid = [];
-  const scale = brickSizeByLevel(lvl); // اندازه آجرها بر اساس سطح
+  const scale = brickSizeByLevel(lvl);
 
   if (name === "SQUARE") {
     grid = [
@@ -488,11 +488,7 @@ function buildPatternBricks(name, lvl) {
   const marginTop = 40;
   const out = [];
 
-  // محاسبه عرض و ارتفاع کل شبکه
   const totalWidth = cols * brickW + (cols + 1) * padding;
-  const totalHeight = rows * brickH + (rows + 1) * padding;
-  
-  // مرکز کردن شبکه
   const offsetX = (w - totalWidth) / 2 + padding;
   const offsetY = marginTop;
 
@@ -501,7 +497,7 @@ function buildPatternBricks(name, lvl) {
       if (grid[r][c] === "1") {
         const x = offsetX + c * (brickW + padding);
         const y = offsetY + r * (brickH + padding);
-        const hits = 1 + Math.floor(level / 2);
+        const hits = 1 + Math.floor(lvl / 2);
         const label = randomItem(badWords);
         const typeRand = Math.random();
         let type = "normal";
@@ -564,15 +560,14 @@ function buildPatternBricks(name, lvl) {
     }
 
     function buildLevel() {
-      const name = patternForLevel(level);
-      if (name) {
-        bricks = buildPatternBricks(name);
-        flashHint("مرحله ویژه: " + name + " ✨");
-      } else {
-        bricks = makeRandomLevel();
-      }
-    }
-
+  const name = patternForLevel(level);
+  if (name) {
+    bricks = buildPatternBricks(name, level);  // اضافه کردن level
+    flashHint("مرحله ویژه: " + name + " ✨");
+  } else {
+    bricks = makeRandomLevel();
+  }
+}
     function resetGame() {
       const minPadW = 40;
       const maxPadW = 100;
