@@ -424,83 +424,90 @@
   return "SQUARE";  // پیش‌فرض برای لول‌های بعدی
 }
 
-    function buildPatternBricks(name) {
-      let grid = [];
+function brickSizeByLevel(lvl) {
+  let scale = 1; // اندازه پایه آجرها
+  if (lvl <= 10) {
+    scale = 1.5; // در مرحله اول آجرها بزرگ‌تر باشند
+  } else if (lvl <= 20) {
+    scale = 1.2; // در مراحل دایره‌ای آجرها کمی کوچکتر شوند
+  } else {
+    scale = 1; // در مراحل قلب آجرها باید به اندازه اصلی برسند
+  }
+  return scale;
+}
 
-      if (name === "SQUARE") {
-        // مربع ساده
-        grid = [
-          "11111111",
-          "11111111",
-          "11111111",
-          "11111111"
-        ];
-      } else if (name === "CIRCLE") {
-        // دایره
-        grid = [
-          "000111000",
-          "001111100",
-          "011111110",
-          "011111110",
-          "001111100",
-          "000111000"
-        ];
-      } else if (name === "HEART") {
-        // قلب (مرحله‌های چالشی)
-        grid = [
-          "00111100111100",
-          "01111111111110",
-          "11111111111111",
-          "11111111111111",
-          "01111111111110",
-          "00111111111100",
-          "00011111111000",
-          "00001111110000",
-          "00000111100000",
-          "00000011000000"
-        ];
-      } else {
-        // اگر شکلی تعریف نشد، هیچی نساز؛ می‌ریم سراغ makeRandomLevel
-        return [];
+function buildPatternBricks(name, lvl) {
+  let grid = [];
+  const scale = brickSizeByLevel(lvl); // اندازه آجرها بر اساس سطح
+
+  if (name === "SQUARE") {
+    grid = [
+      "11111111",
+      "11111111",
+      "11111111",
+      "11111111"
+    ];
+  } else if (name === "CIRCLE") {
+    grid = [
+      "000111000",
+      "001111100",
+      "011111110",
+      "011111110",
+      "001111100",
+      "000111000"
+    ];
+  } else if (name === "HEART") {
+    grid = [
+      "00111100111100",
+      "01111111111110",
+      "11111111111111",
+      "11111111111111",
+      "01111111111110",
+      "00111111111100",
+      "00011111111000",
+      "00001111110000",
+      "00000111100000",
+      "00000011000000"
+    ];
+  }
+
+  const rows = grid.length;
+  const cols = grid[0].length;
+  const padding = 4;
+  const brickW = (w - (cols + 1) * padding) / cols;
+  const brickH = 14;
+  const marginTop = 40;
+  const out = [];
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (grid[r][c] === "1") {
+        const x = padding + c * (brickW + padding);
+        const y = marginTop + r * (brickH + padding);
+        const hits = 1 + Math.floor(level / 2);
+        const label = randomItem(badWords);
+        const typeRand = Math.random();
+        let type = "normal";
+        if (typeRand < 0.1) type = "ice";
+        else if (typeRand < 0.18) type = "strong";
+        else if (typeRand < 0.24) type = "bomb";
+        else if (typeRand < 0.28) type = "golden";
+
+        out.push({
+          x,
+          y,
+          w: brickW * scale,  // اندازه آجر بر اساس سطح
+          h: brickH * scale,  // اندازه آجر بر اساس سطح
+          hits,
+          label,
+          type
+        });
       }
-
-      const rows = grid.length;
-      const cols = grid[0].length;
-      const padding = 4;
-      const brickW = (w - (cols + 1) * padding) / cols;
-      const brickH = 14;
-      const marginTop = 40;
-      const out = [];
-
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          if (grid[r][c] === "1") {
-            const x = padding + c * (brickW + padding);
-            const y = marginTop + r * (brickH + padding);
-            const hits = 1 + Math.floor(level / 2);
-            const label = randomItem(badWords);
-            const typeRand = Math.random();
-            let type = "normal";
-            if (typeRand < 0.1) type = "ice";
-            else if (typeRand < 0.18) type = "strong";
-            else if (typeRand < 0.24) type = "bomb";
-            else if (typeRand < 0.28) type = "golden";
-
-            out.push({
-              x,
-              y,
-              w: brickW,
-              h: brickH,
-              hits,
-              label,
-              type
-            });
-          }
-        }
-      }
-
-      return out;
     }
+  }
+
+  return out;
+}
 
     function makeRandomLevel() {
       const rows = 4 + level;
