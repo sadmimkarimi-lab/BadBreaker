@@ -20,18 +20,19 @@
       font-family:'Vazirmatn',sans-serif;
     }
 
-    /* ✅ بدنه: بدون اسکرول عمودی، تمام ارتفاع صفحه */
-    body{
-      background:#111533;
-      color:#fff;
-      display:flex;
-      flex-direction:column;
-      height:100vh;
-      min-height:100vh;
-      overflow-x:hidden;
-      overflow-y:hidden;
-      transition:background .2s ease,color .2s ease;
-    }
+
+/* بدنه: فلکس ستونی + اجازه اسکرول خیلی کم, نه بریدن صفحه */
+body{
+  background:#111533;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  height:100vh;
+  overflow-x:hidden;
+  overflow-y:auto;   /* قبلاً hidden بود → همین باعث می‌شد پایین صفحه قطع بشه */
+  transition:background .2s ease,color .2s ease;
+}
 
     /* تم روشن */
     body.light-mode{
@@ -194,16 +195,14 @@
       box-shadow:0 0 8px rgba(0,0,0,.35);
     }
 
-    /* ✅ کانتینر بازی: ارتفاع متناسب با صفحه */
-  #game-container{
-      width:100%;
-      flex-grow:1;
-      display:flex;
-      align-items:flex-start;   /* کارت بازی از بالا شروع می‌شود */
-      justify-content:center;
-      padding:0;
-      height:calc(100vh - 140px);
-      max-height:calc(100vh - 140px);
+    /* کانتینر بازی: بگذار فلکس خودش ارتفاع رو تنظیم کنه */
+#game-container{
+  width:100%;
+  flex:1 1 auto;
+  display:flex;
+  align-items:center;      /* بازی وسط عمودی باشه */
+  justify-content:center;  /* وسط افقی */
+  padding:0 8px 4px;       /* یه ذره حاشیه کناری قشنگ‌تر */
 }
 
     canvas{
@@ -409,6 +408,29 @@
       margin-top:6px;
       line-height:1.8;
     }
+ 
+  /* برای موبایل‌های باریک، دکمه‌ها و فونت‌ها یه کم درشت‌تر شن */
+@media (max-width: 480px) {
+  #gameTitle{
+    font-size:16px;
+  }
+  #top-bar{
+    font-size:13px;
+  }
+  #top-left{
+    font-size:12px;
+  }
+  .btn{
+    font-size:12px;
+    padding:6px 12px;
+  }
+  .iconBtn{
+    font-size:16px;
+    min-width:30px;
+    min-height:30px;
+  }
+}
+  
   </style>
 </head>
 <body>
@@ -656,21 +678,44 @@
         slowBallTicks=0,burstTicks=0,totalBricksLevel=0,
         totalBrokenHabits=0;
 
-    // ✅ نسخه اصلاح‌شده‌ی resizeCanvas
-    function resizeCanvas() {
-  const maxWidth = 480;   // حداکثر عرض روی دسکتاپ
-  const ratio    = 1.2;   // نسبت ارتفاع به عرض (یه مستطیل خوش‌فرم)
+    // 🎯 نسخه ریسپانسیو واقعی: بر اساس خود #game-container، نه window
+function resizeCanvas() {
+  const container = document.getElementById("game-container");
+  if (!container) return;
 
-  // عرض بازی: تا حد ممکن عرض موبایل، ولی بیشتر از 480 نشه
-  w = Math.min(window.innerWidth - 24, maxWidth);
+  const ratio   = 1.2;   // نسبت ارتفاع به عرض
+  const padding = 16;    // حاشیه امن دور بازی
+  const maxWidth = 640;  // روی دسکتاپ خیلی غول نشه، روی موبایل کامل میشه
 
-  // ارتفاع بازی بر اساس عرض، تا کشیده نشه
-  h = Math.round(w * ratio);
+  let availableWidth  = container.clientWidth  - padding;
+  let availableHeight = container.clientHeight - padding;
 
+  if (availableWidth <= 0 || availableHeight <= 0) return;
+
+  // روی موبایل معمولاً همین عرض container استفاده میشه
+  availableWidth = Math.min(availableWidth, maxWidth);
+
+  // اول بر اساس عرض، ارتفاع رو حساب می‌کنیم
+  let newW = availableWidth;
+  let newH = newW * ratio;
+
+  // اگه ارتفاع از فضای موجود بیشتر بود، برعکس حساب می‌کنیم
+  if (newH > availableHeight) {
+    newH = availableHeight;
+    newW = newH / ratio;
+  }
+
+  // ذخیره در متغیرهای سراسری
+  w = newW;
+  h = newH;
+
+  // ست‌کردن خود canvas
   canvas.width  = w;
   canvas.height = h;
+  canvas.style.width  = w + "px";
+  canvas.style.height = h + "px";
 
-  // وقتی پد و توپ آماده شدن، پایین بوم تنظیم‌شون کن
+  // پد و توپ رو نسبت به ارتفاع جدید، درست پایین جا بده
   if (paddle && ball) {
     paddle.y = h - 50;
 
@@ -689,7 +734,6 @@
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener("orientationchange", resizeCanvas);
-
     // تم روز/شب
     let currentTheme = "dark";
     function applyTheme(mode){
