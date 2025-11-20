@@ -658,21 +658,26 @@
 
     // ✅ نسخه اصلاح‌شده‌ی resizeCanvas
     function resizeCanvas() {
-  const container = document.getElementById("game-container");
-  const rect = container.getBoundingClientRect();
+  const maxWidth = 480;   // حداکثر عرض روی دسکتاپ
+  const ratio    = 1.2;   // نسبت ارتفاع به عرض (یه مستطیل خوش‌فرم)
 
-  // عرض بازی ← کل عرض موبایل (با حاشیه)
-  w = rect.width * 0.98;
+  // عرض بازی: تا حد ممکن عرض موبایل، ولی بیشتر از 480 نشه
+  w = Math.min(window.innerWidth - 24, maxWidth);
 
-  // ارتفاع بازی ← دقیقاً ارتفاع کل کانتینر
-  h = rect.height;
+  // ارتفاع بازی بر اساس عرض، تا کشیده نشه
+  h = Math.round(w * ratio);
 
-  canvas.width = w;
+  canvas.width  = w;
   canvas.height = h;
 
-  // وقتی پد و توپ آماده شدند:
+  // وقتی پد و توپ آماده شدن، پایین بوم تنظیم‌شون کن
   if (paddle && ball) {
     paddle.y = h - 50;
+
+    if (paddle.x + paddle.w > w) {
+      paddle.x = w - paddle.w;
+    }
+    if (paddle.x < 0) paddle.x = 0;
 
     if (ball.stuckToPaddle) {
       ball.x = paddle.x + paddle.w / 2;
@@ -680,9 +685,10 @@
     }
   }
 }
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-    window.addEventListener("orientationchange", resizeCanvas);
+
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+window.addEventListener("orientationchange", resizeCanvas);
 
     // تم روز/شب
     let currentTheme = "dark";
