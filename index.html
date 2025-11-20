@@ -597,12 +597,24 @@
 
     let w, h;
 
-    function resizeCanvas(){
-      w = Math.min(window.innerWidth*0.95,420);
-      h = Math.min(window.innerHeight*0.8,720);
-      canvas.width = w;
-      canvas.height = h;
-    }
+    function resizeCanvas() {
+  // عرض بازی مثل قبل
+  w = Math.min(window.innerWidth * 0.95, 420);
+
+  // قدی که برای بقیه‌ی اجزا (تاپ‌بار، نوار پیشرفت، پیام، منوی پایین) لازم داریم
+  const otherUiHeight = 210; // تقریبی، برای موبایل خوب جواب می‌دهد
+
+  // ارتفاعی که برای خود بازی باقی می‌ماند
+  let available = window.innerHeight - otherUiHeight;
+
+  // یه حداقل و حداکثر منطقی برای قد بازی
+  if (available < 320) available = 320;  // خیلی کوتاه نشه
+  if (available > 620) available = 620;  // خیلی بلند نشه
+
+  h = available;
+  canvas.width = w;
+  canvas.height = h;
+}
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
