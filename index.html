@@ -597,32 +597,16 @@
     let w, h;
 
 function resizeCanvas() {
-  // عرض بازی
-  w = Math.min(window.innerWidth * 0.95, 420);
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
 
-  // ارتفاع واقعیِ بخش‌های بالا و پایین صفحه را اندازه بگیر
-  const topBarEl       = document.getElementById("top-bar");
-  const progressWrapEl = document.getElementById("progressWrap");
-  const hintBarEl      = document.getElementById("hint-bar");
-  const bottomBarEl    = document.getElementById("bottom-bar");
+  // عرض بازی مثل قبل
+  w = Math.min(vw * 0.95, 420);
 
-  let reserved = 0;
-  if (topBarEl)       reserved += topBarEl.offsetHeight;
-  if (progressWrapEl) reserved += progressWrapEl.offsetHeight;
-  if (hintBarEl)      reserved += hintBarEl.offsetHeight;
-  if (bottomBarEl)    reserved += bottomBarEl.offsetHeight;
+  // فقط حدود 55٪ ارتفاع صفحه رو به خود بازی بده
+  // بقیه ارتفاع برای نوار بالا و پایین خالی می‌مونه
+  h = Math.min(vh * 0.55, 480);
 
-  const extra = 16; // کمی حاشیه بالا/پایین
-
-  let available = window.innerHeight - reserved - extra;
-
-  // حداقل و حداکثر منطقی برای قدِ بازی
-  const minH = 260;
-  const maxH = 620;
-  if (available < minH) available = minH;
-  if (available > maxH) available = maxH;
-
-  h = available;
   canvas.width  = w;
   canvas.height = h;
 }
