@@ -1,296 +1,258 @@
 <!DOCTYPE html>
 <html lang="fa">
-
 <head>
   <meta charset="UTF-8" />
   <title>شکستن عادت‌های بد - Tavita</title>
-  <!-- فونت زیبا و خوانای فارسی -->
+  <!-- فونت فارسی -->
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Vazirmatn', sans-serif;
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Vazirmatn',sans-serif;
     }
-
-    body {
-      background: #111533;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
+    body{
+      background:#111533;
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      height:100vh;
+      overflow:hidden;
     }
-
-    #top-bar {
-      width: 100%;
-      padding: 8px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      direction: ltr;
-      font-size: 14px;
-      gap: 8px;
+    #top-bar{
+      width:100%;
+      padding:8px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      direction:ltr;
+      font-size:14px;
+      gap:8px;
     }
-
-    #top-left {
-      display: flex;
-      gap: 12px;
-      align-items: center;
+    #top-left{
+      display:flex;
+      gap:12px;
+      align-items:center;
     }
-
-    #top-right {
-      display: flex;
-      gap: 6px;
-      align-items: center;
+    #top-right{
+      display:flex;
+      gap:6px;
+      align-items:center;
     }
-
-    .iconBtn {
-      border: none;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: #2c2e7a;
-      color: #fff;
-      font-size: 14px;
-      box-shadow: 0 0 6px rgba(0, 0, 0, .4);
-      cursor: pointer;
-      white-space: nowrap;
+    .iconBtn{
+      border:none;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#2c2e7a;
+      color:#fff;
+      font-size:14px;
+      box-shadow:0 0 6px rgba(0,0,0,.4);
+      cursor:pointer;
+      white-space:nowrap;
     }
-
-    .iconBtn:active {
-      transform: scale(.97)
-    }
+    .iconBtn:active{transform:scale(.97)}
 
     /* نوار پیشرفت ترک عادت‌ها */
-    #progressWrap {
-      width: 100%;
-      padding: 0 14px 6px;
+    #progressWrap{
+      width:100%;
+      padding:0 14px 4px;
+    }
+    #progressBarOuter{
+      width:100%;
+      height:6px;
+      border-radius:999px;
+      background:#22244a;
+      overflow:hidden;
+      box-shadow:0 0 6px rgba(0,0,0,0.6);
+    }
+    #progressBarInner{
+      width:0%;
+      height:100%;
+      background:linear-gradient(90deg,#22c55e,#a3e635);
+      transition:width .2s ease-out;
     }
 
-    #progressBarOuter {
-      width: 100%;
-      height: 6px;
-      border-radius: 999px;
-      background: #22244a;
-      overflow: hidden;
-      box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+    /* نوار پیام (بالا زیر نوار پیشرفت) */
+    #hint-bar{
+      width:100%;
+      padding:2px 14px 6px;
+      font-size:12px;
+      direction:rtl;
+      color:#e5e7eb;
+      opacity:.9;
+    }
+    #hint{
+      width:100%;
+      text-align:right;
     }
 
-    #progressBarInner {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #22c55e, #a3e635);
-      transition: width .2s ease-out;
+    #game-container{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:6px 10px 10px;
+    }
+    canvas{
+      background:#141947;
+      border-radius:14px;
+      box-shadow:0 0 18px rgba(0,0,0,.7);
+      touch-action:none;
     }
 
-    #game-container {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6px 10px 10px;
+    #bottom-bar{
+      width:100%;
+      padding:6px 14px 10px;
+      font-size:12px;
+      direction:rtl;
+      opacity:.9;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    #credits{
+      min-width:160px;
+    }
+    #credits b{
+      color:#facc15;
+    }
+    #credits a{
+      color:#38bdf8;
+      text-decoration:none;
+    }
+    #credits a:hover{
+      text-decoration:underline;
+    }
+    #bottom-buttons{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .btn{
+      border:none;
+      padding:6px 12px;
+      border-radius:999px;
+      background:#1abc9c;
+      color:#fff;
+      font-size:12px;
+      cursor:pointer;
+      box-shadow:0 0 8px rgba(0,0,0,.5);
+      white-space:nowrap;
+    }
+    .btn-shop{background:#ff8c00;}
+    .btn:active{transform:scale(.97)}
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:10;
+    }
+    .box{
+      background:#1b144f;
+      padding:16px;
+      border-radius:16px;
+      width:90%;
+      max-width:380px;
+      box-shadow:0 0 18px rgba(0,0,0,.8);
+      direction:rtl;
+      text-align:right;
+      font-size:13px;
+      line-height:1.7;
+      position:relative;
+    }
+    .box h3{
+      margin-bottom:8px;
+      font-size:16px;
+    }
+    .box p{margin:4px 0;}
+    .closeBtn{
+      margin-top:10px;
+      width:100%;
+      border:none;
+      padding:7px 14px;
+      border-radius:999px;
+      background:#4444aa;
+      color:#fff;
+      font-size:13px;
+      cursor:pointer;
+      box-shadow:0 0 8px rgba(0,0,0,.5);
+    }
+    .closeBtn:active{transform:scale(.97)}
+
+    .shopItem{
+      background:#24145f;
+      padding:8px;
+      border-radius:10px;
+      margin:6px 0;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:13px;
+      transition:transform .15s ease,box-shadow .15s ease;
+    }
+    .shopItem span{display:block}
+    .shopItem button{
+      padding:4px 10px;
+      font-size:11px;
+      border:none;
+      border-radius:999px;
+      background:#ff8c00;
+      color:#fff;
+      cursor:pointer;
+    }
+    .shopItem.bought{
+      transform:scale(1.03);
+      box-shadow:0 0 14px rgba(46,204,113,.8);
+    }
+    #shopMessage{
+      position:absolute;
+      top:4px;
+      left:12px;
+      font-size:11px;
+      color:#2ecc71;
+      opacity:0;
+      pointer-events:none;
+    }
+    .shopMessageVisible{
+      animation:shopFlash 1s ease-out forwards;
+    }
+    @keyframes shopFlash{
+      0%{opacity:0;transform:translateY(-4px);}
+      20%{opacity:1;transform:translateY(0);}
+      80%{opacity:1;}
+      100%{opacity:0;transform:translateY(-6px);}
     }
 
-    canvas {
-      background: #141947;
-      border-radius: 14px;
-      box-shadow: 0 0 18px rgba(0, 0, 0, .7);
-      touch-action: none;
+    #gameOverBox p{margin:4px 0;}
+
+    /* افکت +۲ جون */
+    .lifeGain{
+      position:fixed;
+      top:6px;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:14px;
+      color:#f97316;
+      text-shadow:0 0 6px rgba(0,0,0,.7);
+      animation:lifeFloat 1s ease-out forwards;
+      z-index:20;
+      pointer-events:none;
     }
-
-    #bottom-bar {
-      width: 100%;
-      padding: 4px 14px 10px;
-      font-size: 12px;
-      direction: rtl;
-      opacity: .9;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    #hint {
-      flex: 1;
-      min-width: 150px;
-    }
-
-    #bottom-buttons {
-      display: flex;
-      gap: 6px;
-    }
-
-    .btn {
-      border: none;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: #1abc9c;
-      color: #fff;
-      font-size: 12px;
-      cursor: pointer;
-      box-shadow: 0 0 8px rgba(0, 0, 0, .5);
-      white-space: nowrap;
-    }
-
-    .btn-shop {
-      background: #ff8c00;
-    }
-
-    .btn:active {
-      transform: scale(.97)
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-    }
-
-    .box {
-      background: #1b144f;
-      padding: 16px;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 380px;
-      box-shadow: 0 0 18px rgba(0, 0, 0, .8);
-      direction: rtl;
-      text-align: right;
-      font-size: 13px;
-      line-height: 1.7;
-      position: relative;
-    }
-
-    .box h3 {
-      margin-bottom: 8px;
-      font-size: 16px;
-    }
-
-    .closeBtn {
-      margin-top: 10px;
-      width: 100%;
-      border: none;
-      padding: 7px 14px;
-      border-radius: 999px;
-      background: #4444aa;
-      color: #fff;
-      font-size: 13px;
-      cursor: pointer;
-      box-shadow: 0 0 8px rgba(0, 0, 0, .5);
-    }
-
-    .closeBtn:active {
-      transform: scale(.97)
-    }
-
-    .shopItem {
-      background: #24145f;
-      padding: 8px;
-      border-radius: 10px;
-      margin: 6px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      transition: transform .15s ease, box-shadow .15s ease;
-    }
-
-    .shopItem span {
-      display: block
-    }
-
-    .shopItem button {
-      padding: 4px 10px;
-      font-size: 11px;
-      border: none;
-      border-radius: 999px;
-      background: #ff8c00;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    .shopItem.bought {
-      transform: scale(1.03);
-      box-shadow: 0 0 14px rgba(46, 204, 113, .8);
-    }
-
-    #shopMessage {
-      position: absolute;
-      top: 4px;
-      left: 12px;
-      font-size: 11px;
-      color: #2ecc71;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .shopMessageVisible {
-      animation: shopFlash 1s ease-out forwards;
-    }
-
-    @keyframes shopFlash {
-      0% {
-        opacity: 0;
-        transform: translateY(-4px);
-      }
-
-      20% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      80% {
-        opacity: 1;
-      }
-
-      100% {
-        opacity: 0;
-        transform: translateY(-6px);
-      }
-    }
-
-    #gameOverBox p {
-      margin: 4px 0;
-    }
-
-    /* افکت نمایشی +۲ جون */
-    .lifeGain {
-      position: fixed;
-      top: 6px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 14px;
-      color: #f97316;
-      text-shadow: 0 0 6px rgba(0, 0, 0, .7);
-      animation: lifeFloat 1s ease-out forwards;
-      z-index: 20;
-      pointer-events: none;
-    }
-
-    @keyframes lifeFloat {
-      0% {
-        opacity: 0;
-        transform: translate(-50%, 0);
-      }
-
-      30% {
-        opacity: 1;
-        transform: translate(-50%, -6px);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translate(-50%, -22px);
-      }
+    @keyframes lifeFloat{
+      0%{opacity:0;transform:translate(-50%,0);}
+      30%{opacity:1;transform:translate(-50%,-6px);}
+      100%{opacity:0;transform:translate(-50%,-22px);}
     }
   </style>
 </head>
-
 <body>
   <div id="top-bar">
     <div id="top-left">
@@ -305,53 +267,55 @@
     </div>
   </div>
 
-  <!-- نوار پیشرفت ترک عادت‌ها -->
+  <!-- نوار پیشرفت -->
   <div id="progressWrap">
     <div id="progressBarOuter">
       <div id="progressBarInner"></div>
     </div>
   </div>
 
+  <!-- پیام‌های بازی (بالای صفحه) -->
+  <div id="hint-bar">
+    <div id="hint">با انگشت پَد را حرکت بده و عادت‌های بد را بشکن 💫</div>
+  </div>
+
   <div id="game-container">
     <canvas id="game"></canvas>
   </div>
 
+  <!-- نوار پایین: ساخت طاویتا + دکمه‌ها -->
   <div id="bottom-bar">
-    <div id="hint">با انگشت پَد را حرکت بده و عادت‌های بد را بشکن 💫</div>
+    <div id="credits">
+      ساخته شده توسط <b>طاویتا</b> ·
+      <a href="https://eitaa.com/tavita" target="_blank" rel="noopener">ورود به کانال طاویتا</a>
+    </div>
     <div id="bottom-buttons">
-      <!-- دکمه درباره ما برداشته شد؛ فقط شاپ -->
+      <button id="aboutBtn" class="btn">درباره ما</button>
       <button id="shopBtn" class="btn btn-shop">شاپ</button>
     </div>
   </div>
 
-  <!-- راهنمای بازی (همون باکس قبلی، ولی به‌عنوان راهنما) -->
-  <div id="aboutOverlay" class="overlay">
+  <!-- راهنمای بازی -->
+  <div id="helpOverlay" class="overlay">
     <div class="box">
       <h3>راهنمای بازی عادت‌شکن طاویتا 🎮</h3>
-      <p>
-        ◀ با انگشت یا ماوس، پَد پایین صفحه را حرکت بده تا توپ به آجرها برخورد کند و
-        عادت‌های بد (تنبلی، خشم، ناامیدی و...) را یکی‌یکی بشکنی.
-      </p>
-      <p>
-        ◀ هر آجر یک عادت منفی است؛ وقتی می‌شکند، یک جمله‌ی مثبت و تقویت‌کننده پایین
-        صفحه نشان داده می‌شود تا آرام‌آرام ذهن‌ات هم همراه بازی تغییر کند 🌱
-      </p>
-      <p>
-        ◀ هر مرحله که کامل می‌کنی، <b>۲ تا جون جدید</b> می‌گیری ❤️ و کم‌کم نوار پیشرفت بالا
-        پر می‌شود؛ یعنی عادت‌های بیشتری را شکستی.
-      </p>
-      <p>
-        ◀ دایره‌های رنگی که از آجرها می‌افتد پاورآپ هستند؛ آن‌ها را بگیر تا:
-        پد بزرگ‌تر شود، توپ قوی‌تر شود، توپ آهسته‌تر حرکت کند یا حالت چندتوپی فعال شود 😍
-      </p>
-      <p>
-        ◀ در «شاپ» می‌توانی با امتیازهایی که جمع کردی، رفتارهای خوب (پاورآپ‌های دائم‌تر)
-        بخری و بازی را راحت‌تر کنی.
-      </p>
-      <p style="font-size:11px;opacity:.8;margin-top:4px;">
-        ساخته شده با عشق توسط طاویتا و الهه 💜
-      </p>
-      <button class="closeBtn" id="closeAbout">فهمیدم، بزن بریم 💪</button>
+      <p>◀ با انگشت یا ماوس، پَد پایین صفحه را حرکت بده تا توپ به آجرها برخورد کند و عادت‌های بد (تنبلی، خشم، ناامیدی و...) را یکی‌یکی بشکنی.</p>
+      <p>◀ هر آجر یک عادت منفی است؛ وقتی می‌شکند، یک جمله‌ی مثبت و تقویت‌کننده بالا نشان داده می‌شود تا آرام‌آرام ذهن‌ات هم همراه بازی تغییر کند 🌱</p>
+      <p>◀ هر مرحله که کامل می‌کنی، <b>۲ تا جون جدید</b> می‌گیری ❤️ و کم‌کم نوار پیشرفت بالا پر می‌شود؛ یعنی عادت‌های بیشتری را شکستی.</p>
+      <p>◀ دایره‌های رنگی که از آجرها می‌افتد پاورآپ هستند؛ آن‌ها را بگیر تا: پد بزرگ‌تر شود، توپ قوی‌تر شود، توپ آهسته‌تر حرکت کند یا حالت چندتوپی فعال شود 😍</p>
+      <p>◀ در «شاپ» می‌توانی با امتیازهایی که جمع کردی، رفتارهای خوب (پاورآپ‌های دائم‌تر) بخری و بازی را راحت‌تر کنی.</p>
+      <button class="closeBtn" id="closeHelp">فهمیدم، بزن بریم 💪</button>
+    </div>
+  </div>
+
+  <!-- درباره ما -->
+  <div id="aboutOverlay" class="overlay">
+    <div class="box">
+      <h3>درباره طاویتا 🌸</h3>
+      <p>این بازی توسط «طاویتا» طراحی شده تا به شکل ساده و جذاب، تمرین ترک عادت‌های بد و تقویت ذهن مثبت را لذت‌بخش‌تر کند.</p>
+      <p>با هر بار شکستن یک آجر، فقط در بازی پیش نمی‌روی؛ بلکه یک قدم کوچک برای رشد شخصی و آرامش درونی‌ات برمی‌داری.</p>
+      <p style="font-size:12px;opacity:.85;">اگر این سبک بازی‌ها را دوست داری، در کانال طاویتا همراه ما باش تا ابزارهای بیشتری برای رشد و یادگیری دریافت کنی 🌱</p>
+      <button class="closeBtn" id="closeAbout">بستن</button>
     </div>
   </div>
 
@@ -401,7 +365,10 @@
     const soundBtn = document.getElementById("soundBtn");
     const pauseBtn = document.getElementById("pauseBtn");
     const helpBtn = document.getElementById("helpBtn");
+    const aboutBtn = document.getElementById("aboutBtn");
     const hintEl = document.getElementById("hint");
+    const helpOverlay = document.getElementById("helpOverlay");
+    const closeHelpBtn = document.getElementById("closeHelp");
     const aboutOverlay = document.getElementById("aboutOverlay");
     const closeAboutBtn = document.getElementById("closeAbout");
     const shopOverlay = document.getElementById("shopOverlay");
@@ -415,9 +382,9 @@
     const progressInner = document.getElementById("progressBarInner");
     let w, h;
 
-    function resizeCanvas() {
-      w = Math.min(window.innerWidth * 0.95, 420);
-      h = Math.min(window.innerHeight * 0.8, 720);
+    function resizeCanvas(){
+      w = Math.min(window.innerWidth*0.95,420);
+      h = Math.min(window.innerHeight*0.8,720);
       canvas.width = w;
       canvas.height = h;
     }
@@ -427,58 +394,57 @@
     // صدا
     let audioCtx;
     let isMuted = false;
-
-    function beep(freq = 600, dur = 0.06) {
-      if (isMuted) return;
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(freq=600,dur=0.06){
+      if(isMuted) return;
+      try{
+        if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.frequency.value = freq;
-        osc.type = "square";
+        osc.type="square";
         gain.gain.value = 0.08;
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start();
-        osc.stop(audioCtx.currentTime + dur);
-      } catch (e) { }
+        osc.stop(audioCtx.currentTime+dur);
+      }catch(e){}
     }
-    soundBtn.onclick = () => {
+    soundBtn.onclick=()=>{
       isMuted = !isMuted;
       soundBtn.textContent = isMuted ? "🔇" : "🔊";
     };
 
     // راهنما
-    helpBtn.onclick = () => {
-      aboutOverlay.style.display = "flex";
-    };
-    closeAboutBtn.onclick = () => {
-      aboutOverlay.style.display = "none";
-    };
-    aboutOverlay.addEventListener("click", e => {
-      if (e.target === aboutOverlay) aboutOverlay.style.display = "none";
+    helpBtn.onclick = ()=>{ helpOverlay.style.display="flex"; };
+    closeHelpBtn.onclick = ()=>{ helpOverlay.style.display="none"; };
+    helpOverlay.addEventListener("click",e=>{
+      if(e.target===helpOverlay) helpOverlay.style.display="none";
+    });
+
+    // درباره ما
+    aboutBtn.onclick = ()=>{ aboutOverlay.style.display="flex"; };
+    closeAboutBtn.onclick = ()=>{ aboutOverlay.style.display="none"; };
+    aboutOverlay.addEventListener("click",e=>{
+      if(e.target===aboutOverlay) aboutOverlay.style.display="none";
     });
 
     // متن‌ها
     const badWords = [
-      "تنبلی", "دروغ", "حسادت", "غیبت", "ناامیدی",
-      "ترس", "خشم", "بدقولی", "خودکم\u200cبینی", "بی\u200cاحترامی"
+      "تنبلی","دروغ","حسادت","غیبت","ناامیدی",
+      "ترس","خشم","بدقولی","خودکم\u200cبینی","بی\u200cاحترامی"
     ];
-
-    // پیام‌های مثبت مخصوص هر عادت
     const positiveByLabel = {
-      "تنبلی": "آفرین! همین که شروع کردی یعنی از تنبلی جلو زدی 💪",
-      "دروغ": "راستگویی همیشه سبک‌تره؛ یکی از دروغ‌ها رو ترکوندی ✨",
-      "حسادت": "تمرکز روی رشد خودت، حسادت رو کم می‌کنه 🌱",
-      "غیبت": "کمتر غیبت، یعنی آرامش بیشتر برای دل خودت 💜",
-      "ناامیدی": "همین حالا یک قدم برداشتی؛ ناامیدی کوچیک‌تر شد ✨",
-      "ترس": "شجاعت یعنی با وجود ترس حرکت کنی؛ تو همین کارو کردی 💛",
-      "خشم": "نفس عمیق… تو از خشمت قوی‌تری 🌿",
-      "بدقولی": "همین که حواست به قول‌هات هست، یعنی داری رشد می‌کنی 🤝",
-      "خودکم\u200cبینی": "تو خیلی بیشتر از چیزی که فکر می‌کنی توانایی داری 🌟",
-      "بی\u200cاحترامی": "انتخاب احترام، یعنی احترام به خودت و دیگران 💚"
+      "تنبلی":"آفرین! همین که شروع کردی یعنی از تنبلی جلو زدی 💪",
+      "دروغ":"راستگویی همیشه سبک‌تره؛ یکی از دروغ‌ها رو ترکوندی ✨",
+      "حسادت":"تمرکز روی رشد خودت، حسادت رو کم می‌کنه 🌱",
+      "غیبت":"کمتر غیبت، یعنی آرامش بیشتر برای دل خودت 💜",
+      "ناامیدی":"همین حالا یک قدم برداشتی؛ ناامیدی کوچیک‌تر شد ✨",
+      "ترس":"شجاعت یعنی با وجود ترس حرکت کنی؛ تو همین کارو کردی 💛",
+      "خشم":"نفس عمیق… تو از خشمت قوی‌تری 🌿",
+      "بدقولی":"همین که حواست به قول‌هات هست، یعنی داری رشد می‌کنی 🤝",
+      "خودکم\u200cبینی":"تو خیلی بیشتر از چیزی که فکر می‌کنی توانایی داری 🌟",
+      "بی\u200cاحترامی":"انتخاب احترام، یعنی احترام به خودت و دیگران 💚"
     };
-
     const goodMessages = [
       "تو مهربونی رو انتخاب کردی ❤️",
       "تو در حال رشد و پیشرفتی 💪",
@@ -488,79 +454,64 @@
       "تو از عادت‌های بدت قوی‌تری 😎",
       "تو الهام‌بخش اطرافیانی 💜"
     ];
-
-    function randomItem(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
+    function randomItem(arr){return arr[Math.floor(Math.random()*arr.length)];}
 
     // وضعیت بازی
-    let paddle, ball, bricks, powerUps, score, level, lives,
-      running, paused, strongBallTicks = 0,
-      slowBallTicks = 0,
-      burstTicks = 0,
-      totalBricksLevel = 0;
+    let paddle,ball,bricks,powerUps,score,level,lives,
+        running,paused,strongBallTicks=0,
+        slowBallTicks=0,burstTicks=0,totalBricksLevel=0;
 
-    function updateHUD() {
-      scoreEl.textContent = score;
-      levelEl.textContent = level;
-      livesEl.textContent = lives;
+    function updateHUD(){
+      scoreEl.textContent=score;
+      levelEl.textContent=level;
+      livesEl.textContent=lives;
+    }
+    function flashHint(text,ms=2600){
+      hintEl.textContent=text;
+      if(flashHint._t) clearTimeout(flashHint._t);
+      flashHint._t = setTimeout(()=>{
+        hintEl.textContent="با انگشت پَد را حرکت بده و عادت‌های بد را بشکن 💫";
+      },ms);
+    }
+    function updateProgressBar(ratio){
+      if(!progressInner) return;
+      const v = Math.max(0,Math.min(1,ratio||0));
+      progressInner.style.width = (v*100).toFixed(1)+"%";
     }
 
-    function flashHint(text, ms = 2600) {
-      hintEl.textContent = text;
-      if (flashHint._t) clearTimeout(flashHint._t);
-      flashHint._t = setTimeout(() => {
-        hintEl.textContent = "با انگشت پَد را حرکت بده و عادت‌های بد را بشکن 💫";
-      }, ms);
+    function patternForLevel(lvl){
+      if(lvl<=10) return "SQUARE";
+      if(lvl<=20) return "CIRCLE";
+      if(lvl<=30) return "HEART";
+      return "SQUARE";
     }
 
-    // بروزرسانی نوار پیشرفت
-    function updateProgressBar(ratio) {
-      if (!progressInner) return;
-      const v = Math.max(0, Math.min(1, ratio || 0));
-      progressInner.style.width = (v * 100).toFixed(1) + "%";
-    }
-
-    // الگوهای مرحله‌ای بر اساس شکل‌ها:
-    function patternForLevel(lvl) {
-      if (lvl <= 10) return "SQUARE";   // مراحل ۱ تا ۱۰: مربع
-      if (lvl <= 20) return "CIRCLE";   // مراحل ۱۱ تا ۲۰: دایره
-      if (lvl <= 30) return "HEART";    // مراحل ۲۱ تا ۳۰: قلب
-      return "SQUARE";                  // پیش‌فرض برای لول‌های بعدی
-    }
-
-    // 🎯 اندازه آجر بر اساس مرحله
-    // ۱–۱۰: از ۳ تا ۱
-    // ۱۱–۲۰: از ۲ تا ۱
-    // ۲۱–۳۰: از ۱.۵ تا ۱
-    function brickSizeByLevel(lvl) {
+    function brickSizeByLevel(lvl){
       let size;
-      if (lvl <= 10) {
-        size = 3 - (2 / 9) * (lvl - 1); // 3 → 1
-      } else if (lvl <= 20) {
-        size = 2 - (1 / 9) * (lvl - 11); // 2 → 1
-      } else if (lvl <= 30) {
-        size = 1.5 - (0.5 / 9) * (lvl - 21); // 1.5 → 1
-      } else {
+      if(lvl<=10){
+        size = 3 - (2/9)*(lvl-1);
+      }else if(lvl<=20){
+        size = 2 - (1/9)*(lvl-11);
+      }else if(lvl<=30){
+        size = 1.5 - (0.5/9)*(lvl-21);
+      }else{
         size = 1;
       }
       return size;
     }
 
-    // ساخت آجرها بر اساس الگو + سطح
-    function buildPatternBricks(name, lvl) {
-      let grid = [];
-      const scale = brickSizeByLevel(lvl); // اندازه منطقـی آجر برای این مرحله
-
-      if (name === "SQUARE") {
-        grid = [
+    function buildPatternBricks(name,lvl){
+      let grid=[];
+      const scale = brickSizeByLevel(lvl);
+      if(name==="SQUARE"){
+        grid=[
           "11111111",
           "11111111",
           "11111111",
           "11111111"
         ];
-      } else if (name === "CIRCLE") {
-        grid = [
+      }else if(name==="CIRCLE"){
+        grid=[
           "000111000",
           "001111100",
           "011111110",
@@ -568,8 +519,8 @@
           "001111100",
           "000111000"
         ];
-      } else if (name === "HEART") {
-        grid = [
+      }else if(name==="HEART"){
+        grid=[
           "00111100111100",
           "01111111111110",
           "11111111111111",
@@ -582,522 +533,455 @@
           "00000011000000"
         ];
       }
-
-      const rows = grid.length;
-      const cols = grid[0].length;
-      const padding = 4;
-
-      const brickW = (w - (cols + 1) * padding) / cols; // عرض ثابت
-      const baseH = 14;
-      const brickH = baseH * scale;                      // ارتفاع وابسته به سایز
-      const marginTop = 40;
-
-      const out = [];
-
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          if (grid[r][c] === "1") {
-            const x = padding + c * (brickW + padding);
-            const y = marginTop + r * (brickH + padding);
-
-            const hits = 1 + Math.floor(level / 2);
-            const label = randomItem(badWords);
-            const typeRand = Math.random();
-            let type = "normal";
-            if (typeRand < 0.1) type = "ice";
-            else if (typeRand < 0.18) type = "strong";
-            else if (typeRand < 0.24) type = "bomb";
-            else if (typeRand < 0.28) type = "golden";
-
-            out.push({
-              x,
-              y,
-              w: brickW,
-              h: brickH,
-              hits,
-              label,
-              type
-            });
+      const rows=grid.length;
+      const cols=grid[0].length;
+      const padding=4;
+      const brickW=(w-(cols+1)*padding)/cols;
+      const baseH=14;
+      const brickH=baseH*scale;
+      const marginTop=40;
+      const out=[];
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<cols;c++){
+          if(grid[r][c]==="1"){
+            const x=padding+c*(brickW+padding);
+            const y=marginTop+r*(brickH+padding);
+            const hits=1+Math.floor(level/2);
+            const label=randomItem(badWords);
+            const typeRand=Math.random();
+            let type="normal";
+            if(typeRand<0.1) type="ice";
+            else if(typeRand<0.18) type="strong";
+            else if(typeRand<0.24) type="bomb";
+            else if(typeRand<0.28) type="golden";
+            out.push({x,y,w:brickW,h:brickH,hits,label,type});
           }
         }
       }
-
       return out;
     }
 
-    // ساخت مرحله
-    function buildLevel() {
-      const name = patternForLevel(level);
-      if (name) {
-        bricks = buildPatternBricks(name, level);
-        flashHint("مرحله " + level + " - الگوی " + name + " ✨");
-      } else {
-        bricks = [];
+    function buildLevel(){
+      const name=patternForLevel(level);
+      if(name){
+        bricks=buildPatternBricks(name,level);
+        flashHint("مرحله "+level+" - الگوی "+name+" ✨");
+      }else{
+        bricks=[];
       }
-      totalBricksLevel = bricks.length;
+      totalBricksLevel=bricks.length;
       updateProgressBar(0);
     }
 
-    function resetGame() {
-      const minPadW = 40;
-      const maxPadW = 100;
-      const padW = minPadW;
-      const padH = 12;
-      paddle = {
-        x: (w - padW) / 2,
-        y: h - 40,
-        w: padW,
-        h: padH,
-        minW: minPadW,
-        maxW: maxPadW,
-        speed: 9
+    function resetGame(){
+      const minPadW=40,maxPadW=100;
+      const padW=minPadW,padH=12;
+      paddle={
+        x:(w-padW)/2,
+        y:h-40,
+        w:padW,
+        h:padH,
+        minW:minPadW,
+        maxW:maxPadW,
+        speed:9
       };
-      ball = {
-        x: w / 2,
-        y: h - 60,
-        r: 6,
-        vx: 3.5,
-        vy: -4.5,
-        stuckToPaddle: true
+      ball={
+        x:w/2,
+        y:h-60,
+        r:6,
+        vx:3.5,
+        vy:-4.5,
+        stuckToPaddle:true
       };
-      powerUps = [];
-      score = 0;
-      level = 1;
-      lives = 3;
-      running = true;
-      paused = false;
-      strongBallTicks = 0;
-      slowBallTicks = 0;
-      burstTicks = 0;
+      powerUps=[];
+      score=0;
+      level=1;
+      lives=3;
+      running=true;
+      paused=false;
+      strongBallTicks=0;
+      slowBallTicks=0;
+      burstTicks=0;
       buildLevel();
       updateHUD();
       updateProgressBar(0);
-      flashHint("با پَد توپ رو به سمت عادت‌های بد بفرست و بشکنشون 💥", 3000);
+      flashHint("با پَد توپ رو به سمت عادت‌های بد بفرست و بشکنشون 💥",3000);
     }
     resetGame();
 
-    // کنترل پد
-    function movePaddleTo(clientX) {
-      const rect = canvas.getBoundingClientRect();
-      const x = (clientX - rect.left) * (w / rect.width);
-      paddle.x = x - paddle.w / 2;
-      if (paddle.x < 0) paddle.x = 0;
-      if (paddle.x + paddle.w > w) paddle.x = w - paddle.w;
-      if (ball.stuckToPaddle) {
-        ball.x = paddle.x + paddle.w / 2;
-        ball.y = paddle.y - ball.r - 1;
+    function movePaddleTo(clientX){
+      const rect=canvas.getBoundingClientRect();
+      const x=(clientX-rect.left)*(w/rect.width);
+      paddle.x=x-paddle.w/2;
+      if(paddle.x<0) paddle.x=0;
+      if(paddle.x+paddle.w>w) paddle.x=w-paddle.w;
+      if(ball.stuckToPaddle){
+        ball.x=paddle.x+paddle.w/2;
+        ball.y=paddle.y-ball.r-1;
       }
     }
-    canvas.addEventListener("mousemove", e => {
-      if (!running || paused) return;
+    canvas.addEventListener("mousemove",e=>{
+      if(!running||paused) return;
       movePaddleTo(e.clientX);
     });
-    canvas.addEventListener("mousedown", e => {
-      if (!running || paused) return;
-      if (ball.stuckToPaddle) {
-        ball.stuckToPaddle = false;
+    canvas.addEventListener("mousedown",e=>{
+      if(!running||paused) return;
+      if(ball.stuckToPaddle){
+        ball.stuckToPaddle=false;
         beep(700);
       }
     });
-    canvas.addEventListener("touchstart", e => {
-      if (!running || paused) return;
-      const touch = e.touches[0];
-      movePaddleTo(touch.clientX);
-      if (ball.stuckToPaddle) {
-        ball.stuckToPaddle = false;
+    canvas.addEventListener("touchstart",e=>{
+      if(!running||paused) return;
+      const t=e.touches[0];
+      movePaddleTo(t.clientX);
+      if(ball.stuckToPaddle){
+        ball.stuckToPaddle=false;
         beep(700);
       }
       e.preventDefault();
-    }, {
-      passive: false
-    });
-    canvas.addEventListener("touchmove", e => {
-      if (!running || paused) return;
-      const touch = e.touches[0];
-      movePaddleTo(touch.clientX);
+    },{passive:false});
+    canvas.addEventListener("touchmove",e=>{
+      if(!running||paused) return;
+      const t=e.touches[0];
+      movePaddleTo(t.clientX);
       e.preventDefault();
-    }, {
-      passive: false
-    });
+    },{passive:false});
 
-    pauseBtn.onclick = () => {
-      if (!running) return;
-      paused = !paused;
-      pauseBtn.textContent = paused ? "▶️" : "⏸";
-      flashHint(paused ? "بازی متوقف شد ⏸" : "ادامه بازی ▶️", 1500);
+    pauseBtn.onclick=()=>{
+      if(!running) return;
+      paused=!paused;
+      pauseBtn.textContent=paused?"▶️":"⏸";
+      flashHint(paused?"بازی متوقف شد ⏸":"ادامه بازی ▶️",1500);
     };
 
-    // شاپ
-    function showShopMsg(text) {
-      shopMessage.textContent = text;
+    function showShopMsg(text){
+      shopMessage.textContent=text;
       shopMessage.classList.remove("shopMessageVisible");
       void shopMessage.offsetWidth;
       shopMessage.classList.add("shopMessageVisible");
     }
-    shopBtn.onclick = () => {
-      if (!running) return;
-      shopOverlay.style.display = "flex";
+    shopBtn.onclick=()=>{
+      if(!running) return;
+      shopOverlay.style.display="flex";
     };
-    closeShopBtn.onclick = () => {
-      shopOverlay.style.display = "none";
-    };
-    shopOverlay.addEventListener("click", e => {
-      if (e.target === shopOverlay) shopOverlay.style.display = "none";
+    closeShopBtn.onclick=()=>{shopOverlay.style.display="none";};
+    shopOverlay.addEventListener("click",e=>{
+      if(e.target===shopOverlay) shopOverlay.style.display="none";
     });
-    document.querySelectorAll(".shopItem button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const item = btn.getAttribute("data-item");
-        let cost = 0;
-        if (item === "pad") cost = 150;
-        else if (item === "strength") cost = 220;
-        else if (item === "slow") cost = 180;
-        if (score < cost) {
+    document.querySelectorAll(".shopItem button").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const item=btn.getAttribute("data-item");
+        let cost=0;
+        if(item==="pad") cost=150;
+        else if(item==="strength") cost=220;
+        else if(item==="slow") cost=180;
+        if(score<cost){
           showShopMsg("امتیاز کافی نداری 😅");
-          beep(200, 0.1);
+          beep(200,0.1);
           return;
         }
-        score -= cost;
-        if (item === "pad") {
-          paddle.w = Math.min(paddle.w + 12, paddle.maxW);
+        score-=cost;
+        if(item==="pad"){
+          paddle.w=Math.min(paddle.w+12,paddle.maxW);
           flashHint("پدت آگاه‌تر و بزرگ‌تر شد 🌱");
-        } else if (item === "strength") {
-          strongBallTicks += 1000;
+        }else if(item==="strength"){
+          strongBallTicks+=1000;
           flashHint("توپ قوی‌تر شد؛ راحت‌تر می‌شکنی 💪");
-        } else if (item === "slow") {
-          slowBallTicks += 900;
+        }else if(item==="slow"){
+          slowBallTicks+=900;
           flashHint("آرامش؛ توپ کمی کندتر شد 💙");
         }
-        const row = document.querySelector(`.shopItem[data-item-row="${item}"]`);
-        if (row) {
+        const row=document.querySelector(`.shopItem[data-item-row="${item}"]`);
+        if(row){
           row.classList.add("bought");
-          setTimeout(() => row.classList.remove("bought"), 260);
+          setTimeout(()=>row.classList.remove("bought"),260);
         }
         showShopMsg("رفتار خوب خریدی؛ آفرین به تو ❤️");
         updateHUD();
       });
     });
 
-    // پاورآپ‌ها داخل بازی (شامل Burst)
-    function spawnPowerUp(x, y) {
-      const types = ["pad", "strength", "slow", "burst"];
-      const type = types[Math.floor(Math.random() * types.length)];
-      const labelGood = randomItem(goodMessages);
-      powerUps.push({
-        x,
-        y,
-        r: 9,
-        vy: 1.3,
-        type,
-        labelGood
-      });
+    function spawnPowerUp(x,y){
+      const types=["pad","strength","slow","burst"];
+      const type=types[Math.floor(Math.random()*types.length)];
+      const labelGood=randomItem(goodMessages);
+      powerUps.push({x,y,r:9,vy:1.3,type,labelGood});
     }
-
-    function applyPowerUp(pu) {
-      if (pu.type === "pad") {
-        paddle.w = Math.min(paddle.w + 10, paddle.maxW);
+    function applyPowerUp(pu){
+      if(pu.type==="pad"){
+        paddle.w=Math.min(paddle.w+10,paddle.maxW);
         flashHint("مهربانی پدت رو بزرگ‌تر کرد ❤️");
-      } else if (pu.type === "strength") {
-        strongBallTicks += 900;
+      }else if(pu.type==="strength"){
+        strongBallTicks+=900;
         flashHint("تلاش بیشتر؛ توپ قوی‌تر شد 💪");
-      } else if (pu.type === "slow") {
-        slowBallTicks += 800;
+      }else if(pu.type==="slow"){
+        slowBallTicks+=800;
         flashHint("آرامش؛ توپ کمی کندتر شد 💙");
-      } else if (pu.type === "burst") {
-        burstTicks += 260; // چند ثانیه
-        flashHint("حالت چندتوپی فعال شد! 😍🔥", 3000);
+      }else if(pu.type==="burst"){
+        burstTicks+=260;
+        flashHint("حالت چندتوپی فعال شد! 😍🔥",3000);
       }
-      flashHint(pu.labelGood, 2800);
-      beep(900, 0.1);
+      flashHint(pu.labelGood,2800);
+      beep(900,0.1);
     }
 
-    // افکت نمایشی +۲ جون
-    function showLifeGainEffect(text) {
-      const el = document.createElement("div");
-      el.className = "lifeGain";
-      el.textContent = text;
+    function showLifeGainEffect(text){
+      const el=document.createElement("div");
+      el.className="lifeGain";
+      el.textContent=text;
       document.body.appendChild(el);
-      setTimeout(() => {
-        el.remove();
-      }, 1000);
+      setTimeout(()=>el.remove(),1000);
     }
 
-    // گیم‌اور
-    function showGameOver() {
-      running = false;
-      gameOverOverlay.style.display = "flex";
-      goScore.textContent = "امتیاز شما: " + score;
-      goLevel.textContent = "مرحله‌ای که رسیدی: " + level;
+    function showGameOver(){
+      running=false;
+      gameOverOverlay.style.display="flex";
+      goScore.textContent="امتیاز شما: "+score;
+      goLevel.textContent="مرحله‌ای که رسیدی: "+level;
     }
-    retryBtn.onclick = () => {
-      gameOverOverlay.style.display = "none";
+    retryBtn.onclick=()=>{
+      gameOverOverlay.style.display="none";
       resetGame();
-      running = true;
+      running=true;
     };
-    gameOverOverlay.addEventListener("click", e => {
-      if (e.target === gameOverOverlay) {
-        gameOverOverlay.style.display = "none";
+    gameOverOverlay.addEventListener("click",e=>{
+      if(e.target===gameOverOverlay){
+        gameOverOverlay.style.display="none";
         resetGame();
-        running = true;
+        running=true;
       }
     });
 
-    function update() {
-      if (!running || paused) return;
-
-      if (strongBallTicks > 0) strongBallTicks--;
-      if (slowBallTicks > 0) slowBallTicks--;
-      if (burstTicks > 0) burstTicks--;
-
-      if (ball.stuckToPaddle) {
-        ball.x = paddle.x + paddle.w / 2;
-        ball.y = paddle.y - ball.r - 1;
+    function update(){
+      if(!running||paused) return;
+      if(strongBallTicks>0) strongBallTicks--;
+      if(slowBallTicks>0) slowBallTicks--;
+      if(burstTicks>0) burstTicks--;
+      if(ball.stuckToPaddle){
+        ball.x=paddle.x+paddle.w/2;
+        ball.y=paddle.y-ball.r-1;
         return;
       }
+      let speedFactor=1;
+      if(slowBallTicks>0) speedFactor*=0.7;
+      ball.x+=ball.vx*speedFactor;
+      ball.y+=ball.vy*speedFactor;
 
-      let speedFactor = 1;
-      if (slowBallTicks > 0) speedFactor *= 0.7;
-      ball.x += ball.vx * speedFactor;
-      ball.y += ball.vy * speedFactor;
-
-      // دیوارها
-      if (ball.x - ball.r < 0) {
-        ball.x = ball.r;
-        ball.vx *= -1;
+      if(ball.x-ball.r<0){
+        ball.x=ball.r;
+        ball.vx*=-1;
       }
-      if (ball.x + ball.r > w) {
-        ball.x = w - ball.r;
-        ball.vx *= -1;
+      if(ball.x+ball.r>w){
+        ball.x=w-ball.r;
+        ball.vx*=-1;
       }
-      if (ball.y - ball.r < 0) {
-        ball.y = ball.r;
-        ball.vy *= -1;
+      if(ball.y-ball.r<0){
+        ball.y=ball.r;
+        ball.vy*=-1;
       }
 
-      // برخورد با پد
-      if (
-        ball.y + ball.r >= paddle.y &&
-        ball.y + ball.r <= paddle.y + paddle.h &&
-        ball.x >= paddle.x && ball.x <= paddle.x + paddle.w &&
-        ball.vy > 0
-      ) {
-        const hitPos = (ball.x - (paddle.x + paddle.w / 2)) / (paddle.w / 2);
-        ball.vx = hitPos * 5;
-        ball.vy = -Math.abs(ball.vy);
+      if(
+        ball.y+ball.r>=paddle.y &&
+        ball.y+ball.r<=paddle.y+paddle.h &&
+        ball.x>=paddle.x && ball.x<=paddle.x+paddle.w &&
+        ball.vy>0
+      ){
+        const hitPos=(ball.x-(paddle.x+paddle.w/2))/(paddle.w/2);
+        ball.vx=hitPos*5;
+        ball.vy=-Math.abs(ball.vy);
         beep(600);
       }
 
-      // افتادن پایین
-      if (ball.y - ball.r > h) {
+      if(ball.y-ball.r>h){
         lives--;
         updateHUD();
-        if (lives <= 0) {
-          beep(200, 0.2);
+        if(lives<=0){
+          beep(200,0.2);
           showGameOver();
           return;
-        } else {
-          beep(250, 0.16);
-          ball.x = paddle.x + paddle.w / 2;
-          ball.y = paddle.y - ball.r - 1;
-          ball.vx = 3.5 * (Math.random() < 0.5 ? -1 : 1);
-          ball.vy = -4.5;
-          ball.stuckToPaddle = true;
-          burstTicks = 0; // ریست حالت چندتوپی
+        }else{
+          beep(250,0.16);
+          ball.x=paddle.x+paddle.w/2;
+          ball.y=paddle.y-ball.r-1;
+          ball.vx=3.5*(Math.random()<0.5?-1:1);
+          ball.vy=-4.5;
+          ball.stuckToPaddle=true;
+          burstTicks=0;
         }
       }
 
-      // پاورآپ‌ها
-      for (const pu of powerUps) {
-        pu.y += pu.vy;
+      for(const pu of powerUps){
+        pu.y+=pu.vy;
       }
-      for (let i = powerUps.length - 1; i >= 0; i--) {
-        const pu = powerUps[i];
-        if (
-          pu.y + pu.r >= paddle.y &&
-          pu.y - pu.r <= paddle.y + paddle.h &&
-          pu.x >= paddle.x && pu.x <= paddle.x + paddle.w
-        ) {
+      for(let i=powerUps.length-1;i>=0;i--){
+        const pu=powerUps[i];
+        if(
+          pu.y+pu.r>=paddle.y &&
+          pu.y-pu.r<=paddle.y+paddle.h &&
+          pu.x>=paddle.x && pu.x<=paddle.x+paddle.w
+        ){
           applyPowerUp(pu);
-          powerUps.splice(i, 1);
-        } else if (pu.y - pu.r > h) {
-          powerUps.splice(i, 1);
+          powerUps.splice(i,1);
+        }else if(pu.y-pu.r>h){
+          powerUps.splice(i,1);
         }
       }
 
-      // برخورد با آجرها
-      for (let i = bricks.length - 1; i >= 0; i--) {
-        const b = bricks[i];
-        if (
-          ball.x + ball.r > b.x &&
-          ball.x - ball.r < b.x + b.w &&
-          ball.y + ball.r > b.y &&
-          ball.y - ball.r < b.y + b.h
-        ) {
-          const overlapL = ball.x + ball.r - b.x;
-          const overlapR = b.x + b.w - (ball.x - ball.r);
-          const overlapT = ball.y + ball.r - b.y;
-          const overlapB = b.y + b.h - (ball.y - ball.r);
-          const minO = Math.min(overlapL, overlapR, overlapT, overlapB);
-          if (minO === overlapL || minO === overlapR) ball.vx *= -1;
-          else ball.vy *= -1;
+      for(let i=bricks.length-1;i>=0;i--){
+        const b=bricks[i];
+        if(
+          ball.x+ball.r>b.x &&
+          ball.x-ball.r<b.x+b.w &&
+          ball.y+ball.r>b.y &&
+          ball.y-ball.r<b.y+b.h
+        ){
+          const overlapL=ball.x+ball.r-b.x;
+          const overlapR=b.x+b.w-(ball.x-ball.r);
+          const overlapT=ball.y+ball.r-b.y;
+          const overlapB=b.y+b.h-(ball.y-ball.r);
+          const minO=Math.min(overlapL,overlapR,overlapT,overlapB);
+          if(minO===overlapL||minO===overlapR) ball.vx*=-1;
+          else ball.vy*=-1;
 
-          let damage = 1;
-          if (strongBallTicks > 0) damage = 2;
-          if (b.type === "ice") {
-            if (!b._iceHit) {
-              b._iceHit = true;
-            } else {
-              b.hits -= damage;
-            }
-          } else if (b.type === "strong") {
-            b.hits -= damage * 0.8;
-          } else if (b.type === "golden") {
-            b.hits -= damage;
-          } else {
-            b.hits -= damage;
+          let damage=1;
+          if(strongBallTicks>0) damage=2;
+          if(b.type==="ice"){
+            if(!b._iceHit){ b._iceHit=true; }
+            else b.hits-=damage;
+          }else if(b.type==="strong"){
+            b.hits-=damage*0.8;
+          }else if(b.type==="golden"){
+            b.hits-=damage;
+          }else{
+            b.hits-=damage;
           }
 
-          if (b.hits <= 0) {
-            let baseScore = 10;
-            if (b.type === "strong") baseScore = 14;
-            if (b.type === "golden") baseScore = 20;
-            score += baseScore;
-            if (Math.random() < 0.25) spawnPowerUp(b.x + b.w / 2, b.y + b.h / 2);
-
-            if (b.type === "bomb") {
-              for (const nb of bricks) {
-                if (nb === b) continue;
-                const dx = (nb.x + nb.w / 2) - (b.x + b.w / 2);
-                const dy = (nb.y + nb.h / 2) - (b.y + b.h / 2);
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 60) {
-                  nb.hits -= damage;
-                }
+          if(b.hits<=0){
+            let baseScore=10;
+            if(b.type==="strong") baseScore=14;
+            if(b.type==="golden") baseScore=20;
+            score+=baseScore;
+            if(Math.random()<0.25) spawnPowerUp(b.x+b.w/2,b.y+b.h/2);
+            if(b.type==="bomb"){
+              for(const nb of bricks){
+                if(nb===b) continue;
+                const dx=(nb.x+nb.w/2)-(b.x+b.w/2);
+                const dy=(nb.y+nb.h/2)-(b.y+b.h/2);
+                const dist=Math.sqrt(dx*dx+dy*dy);
+                if(dist<60) nb.hits-=damage;
               }
             }
-
-            const posMsg = positiveByLabel[b.label] || `یکی از "${b.label}"‌ها رو شکستی؛ آفرین 💚`;
-            flashHint(posMsg, 2600);
-
-            bricks.splice(i, 1);
-
-            if (totalBricksLevel > 0) {
-              const cleared = totalBricksLevel - bricks.length;
-              updateProgressBar(cleared / totalBricksLevel);
+            const posMsg=positiveByLabel[b.label]||`یکی از "${b.label}"‌ها رو شکستی؛ آفرین 💚`;
+            flashHint(posMsg,2600);
+            bricks.splice(i,1);
+            if(totalBricksLevel>0){
+              const cleared=totalBricksLevel-bricks.length;
+              updateProgressBar(cleared/totalBricksLevel);
             }
-          } else {
-            score += 3;
+          }else{
+            score+=3;
           }
-          beep(800, 0.05);
+          beep(800,0.05);
           updateHUD();
           break;
         }
       }
 
-      // اگه همه آجرها رفتن → لِوِل بعد + ۲ جون
-      if (bricks.length === 0) {
+      if(bricks.length===0){
         level++;
-
-        // ❤️ اضافه کردن ۲ جون در هر مرحله
-        lives += 2;
+        lives+=2;          // ❤️ دو جون جدید
         updateHUD();
         showLifeGainEffect("+2 ❤️");
 
-        ball.stuckToPaddle = true;
-        ball.x = paddle.x + paddle.w / 2;
-        ball.y = paddle.y - ball.r - 1;
-        ball.vx *= 1.08;
-        ball.vy *= 1.08;
+        ball.stuckToPaddle=true;
+        ball.x=paddle.x+paddle.w/2;
+        ball.y=paddle.y-ball.r-1;
+        ball.vx*=1.08;
+        ball.vy*=1.08;
 
         buildLevel();
         updateHUD();
         updateProgressBar(0);
-        flashHint("مرحله " + level + " شروع شد؛ ۲ تا جون تازه گرفتی ❤️", 2500);
-        beep(1000, 0.15);
+        flashHint("مرحله "+level+" شروع شد؛ ۲ تا جون تازه گرفتی ❤️",2500);
+        beep(1000,0.15);
       }
     }
 
-    function draw() {
-      ctx.clearRect(0, 0, w, h);
-      const g = ctx.createLinearGradient(0, 0, 0, h);
-      g.addColorStop(0, "#151b5c");
-      g.addColorStop(1, "#09071e");
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, w, h);
+    function draw(){
+      ctx.clearRect(0,0,w,h);
+      const g=ctx.createLinearGradient(0,0,0,h);
+      g.addColorStop(0,"#151b5c");
+      g.addColorStop(1,"#09071e");
+      ctx.fillStyle=g;
+      ctx.fillRect(0,0,w,h);
 
-      // آجرها
-      for (const b of bricks) {
-        let color = "#ffb347";
-        if (b.type === "ice") color = "#66d9ff";
-        else if (b.type === "strong") color = "#ff6f91";
-        else if (b.type === "bomb") color = "#c084ff";
-        else if (b.type === "golden") color = "#ffd700";
-        ctx.fillStyle = color;
-        ctx.fillRect(b.x, b.y, b.w, b.h);
-        ctx.fillStyle = "#00000040";
-        ctx.fillRect(b.x, b.y + b.h - 3, b.w, 3);
-
-        // متن عادت بد
+      for(const b of bricks){
+        let color="#ffb347";
+        if(b.type==="ice") color="#66d9ff";
+        else if(b.type==="strong") color="#ff6f91";
+        else if(b.type==="bomb") color="#c084ff";
+        else if(b.type==="golden") color="#ffd700";
+        ctx.fillStyle=color;
+        ctx.fillRect(b.x,b.y,b.w,b.h);
+        ctx.fillStyle="#00000040";
+        ctx.fillRect(b.x,b.y+b.h-3,b.w,3);
         ctx.save();
-        ctx.fillStyle = "#111";
-        ctx.font = "9px Vazirmatn";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.direction = "rtl";
-        ctx.fillText(b.label, b.x + b.w / 2, b.y + b.h / 2);
+        ctx.fillStyle="#111";
+        ctx.font="9px Vazirmatn";
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+        ctx.direction="rtl";
+        ctx.fillText(b.label,b.x+b.w/2,b.y+b.h/2);
         ctx.restore();
       }
 
-      // پاورآپ‌ها
-      for (const pu of powerUps) {
-        let c = "#1abc9c";
-        if (pu.type === "strength") c = "#ff9f43";
-        else if (pu.type === "slow") c = "#9b59b6";
-        else if (pu.type === "burst") c = "#e91e63";
+      for(const pu of powerUps){
+        let c="#1abc9c";
+        if(pu.type==="strength") c="#ff9f43";
+        else if(pu.type==="slow") c="#9b59b6";
+        else if(pu.type==="burst") c="#e91e63";
         ctx.beginPath();
-        ctx.arc(pu.x, pu.y, pu.r, 0, Math.PI * 2);
-        const g2 = ctx.createRadialGradient(pu.x, pu.y, 2, pu.x, pu.y, pu.r + 3);
-        g2.addColorStop(0, "#ffffff");
-        g2.addColorStop(1, c);
-        ctx.fillStyle = g2;
+        ctx.arc(pu.x,pu.y,pu.r,0,Math.PI*2);
+        const g2=ctx.createRadialGradient(pu.x,pu.y,2,pu.x,pu.y,pu.r+3);
+        g2.addColorStop(0,"#ffffff");
+        g2.addColorStop(1,c);
+        ctx.fillStyle=g2;
         ctx.fill();
-        ctx.strokeStyle = "#ffffffaa";
-        ctx.lineWidth = 1;
+        ctx.strokeStyle="#ffffffaa";
+        ctx.lineWidth=1;
         ctx.stroke();
       }
 
-      // پد
-      ctx.fillStyle = "#3ac7ff";
-      ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
-      ctx.fillStyle = "#ffffff55";
-      ctx.fillRect(paddle.x, paddle.y, paddle.w, 3);
+      ctx.fillStyle="#3ac7ff";
+      ctx.fillRect(paddle.x,paddle.y,paddle.w,paddle.h);
+      ctx.fillStyle="#ffffff55";
+      ctx.fillRect(paddle.x,paddle.y,paddle.w,3);
 
-      // توپ – حالت Burst (توپ‌های شبحی اطراف)
-      if (burstTicks > 0) {
-        const t = Date.now() / 300;
-        const count = 4;
-        const offset = 8;
-        for (let i = 0; i < count; i++) {
-          const ang = (Math.PI * 2 / count) * i + t;
-          const bx = ball.x + Math.cos(ang) * offset;
-          const by = ball.y + Math.sin(ang) * offset;
+      if(burstTicks>0){
+        const t=Date.now()/300;
+        const count=4,offset=8;
+        for(let i=0;i<count;i++){
+          const ang=(Math.PI*2/count)*i+t;
+          const bx=ball.x+Math.cos(ang)*offset;
+          const by=ball.y+Math.sin(ang)*offset;
           ctx.beginPath();
-          ctx.arc(bx, by, ball.r - 2, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(255,255,255,0.35)";
+          ctx.arc(bx,by,ball.r-2,0,Math.PI*2);
+          ctx.fillStyle="rgba(255,255,255,0.35)";
           ctx.fill();
         }
       }
 
-      // توپ اصلی
       ctx.beginPath();
-      ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
-      ctx.fillStyle = strongBallTicks > 0 ? "#fffb8a" : "#ffffff";
+      ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
+      ctx.fillStyle=strongBallTicks>0?"#fffb8a":"#ffffff";
       ctx.fill();
-      ctx.strokeStyle = "#ffffff55";
-      ctx.lineWidth = 1;
+      ctx.strokeStyle="#ffffff55";
+      ctx.lineWidth=1;
       ctx.stroke();
     }
 
-    function loop() {
+    function loop(){
       update();
       draw();
       requestAnimationFrame(loop);
@@ -1105,5 +989,4 @@
     loop();
   </script>
 </body>
-
 </html>
