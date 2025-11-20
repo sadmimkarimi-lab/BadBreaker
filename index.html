@@ -195,12 +195,11 @@
     }
 #game-container{
   width:100%;
-  height:100%;
   flex-grow:1;
   display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:0;
+  align-items:center;      /* افقی وسط بمونه */
+  justify-content:flex-start; /* ولی از بالا شروع بشه، نه وسط */
+  padding:8px 0 16px;      /* یه فاصله کوچیک از بالا و پایین */
 }
     canvas{
       background:#141947;
