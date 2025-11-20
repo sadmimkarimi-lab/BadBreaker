@@ -6,13 +6,12 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- ادامهٔ کدهای خودت -->
   <!-- فونت فارسی -->
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
     html, body{
-  height:100%;
-}
+      height:100%;
+    }
     
     *{
       margin:0;
@@ -20,18 +19,19 @@
       box-sizing:border-box;
       font-family:'Vazirmatn',sans-serif;
     }
+
+    /* ✅ بدنه: بدون اسکرول عمودی، تمام ارتفاع صفحه */
     body{
-  background:#111533;
-  color:#fff;
-  display:flex;
-  flex-direction:column;
-  /* به‌جای height:100vh; این خط رو گذاشتیم */
-  min-height:100vh;
-  /* فقط اسکرول عمودی آزاد باشه */
-  overflow-x:hidden;
-  overflow-y:auto;
-  transition:background .2s ease,color .2s ease;
-}
+      background:#111533;
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      height:100vh;
+      min-height:100vh;
+      overflow-x:hidden;
+      overflow-y:hidden;
+      transition:background .2s ease,color .2s ease;
+    }
 
     /* تم روشن */
     body.light-mode{
@@ -73,43 +73,43 @@
       background:#f97316;
       color:#111827;
     }
-/* هدر بالای صفحه: لوگو + عنوان + دکمه‌ها */
-#header-bar{
-  width:100%;
-  padding:6px 10px 4px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  /* قبلاً rtl بود، این رو بکن ltr تا جای آیتم‌ها جابه‌جا بشه */
-  direction:ltr;
-  gap:10px;
-}
 
-/* خود دکمه‌ها و عنوان همچنان راست‌به‌چپ بمونن */
-#header-left{
-  display:flex;
-  gap:8px;
-  direction:rtl;
-}
+    /* هدر بالای صفحه: لوگو + عنوان + دکمه‌ها */
+    #header-bar{
+      width:100%;
+      padding:6px 10px 4px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      direction:ltr;
+      gap:10px;
+    }
 
-#header-right{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  direction:rtl;
-}
+    #header-left{
+      display:flex;
+      gap:8px;
+      direction:rtl;
+    }
 
-#gameLogo{
-  width:36px;
-  height:36px;
-  border-radius:999px;
-  object-fit:cover;
-}
+    #header-right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      direction:rtl;
+    }
 
-#gameTitle{
-  font-size:18px;
-  font-weight:700;
-}
+    #gameLogo{
+      width:36px;
+      height:36px;
+      border-radius:999px;
+      object-fit:cover;
+    }
+
+    #gameTitle{
+      font-size:18px;
+      font-weight:700;
+    }
+
     #top-bar{
       width:100%;
       padding:4px 10px;
@@ -193,14 +193,19 @@
       border:1px solid #374151;
       box-shadow:0 0 8px rgba(0,0,0,.35);
     }
-#game-container{
-  width:100%;
-  flex-grow:1;
-  display:flex;
-  align-items:center;
-  justify-content:center; /* بازی دقیق وسط */
-  padding:8px 0 16px;
-}
+
+    /* ✅ کانتینر بازی: ارتفاع متناسب با صفحه */
+    #game-container{
+      width:100%;
+      flex-grow:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:8px 0 16px;
+      height:calc(100vh - 140px);    /* هدر + نوار وضعیت + نوار پیشرفت + پیام + نوار پایین */
+      max-height:calc(100vh - 140px);
+    }
+
     canvas{
       background:#141947;
       border-radius:14px;
@@ -299,7 +304,7 @@
       align-items:center;
       justify-content:center;
       z-index:10;
-      }
+    }
     .box{
       background:#1b144f;
       padding:16px;
@@ -368,7 +373,7 @@
       pointer-events:none;
     }
     .shopMessageVisible{
-      animation:shopFlash 1s.ease-out.forwards;
+      animation:shopFlash 1s ease-out forwards;
     }
     @keyframes shopFlash{
       0%{opacity:0;transform:translateY(-4px);}
@@ -408,32 +413,30 @@
 </head>
 <body>
   <!-- هدر: لوگو + عنوان + دکمه‌های شاپ/درباره -->
-<div id="header-bar">
-  <div id="header-left">
-    <button id="aboutBtn" class="btn">درباره ما</button>
-    <button id="shopBtn" class="btn btn-shop">شاپ</button>
-  </div>
+  <div id="header-bar">
+    <div id="header-left">
+      <button id="aboutBtn" class="btn">درباره ما</button>
+      <button id="shopBtn" class="btn btn-shop">شاپ</button>
+    </div>
 
-  <div id="header-right">
-    <img
-      id="gameLogo"
-      src="https://cdnfa.com/irangiah/a9be/uploads/bazi/picsart-25-11-14-07-34-00-477.webp"
-      alt="لوگوی طاویتا"
-    />
-    <span id="gameTitle">بازی بدشکن طاویتا</span>
+    <div id="header-right">
+      <img
+        id="gameLogo"
+        src="https://cdnfa.com/irangiah/a9be/uploads/bazi/picsart-25-11-14-07-34-00-477.webp"
+        alt="لوگوی طاویتا"
+      />
+      <span id="gameTitle">بازی بدشکن طاویتا</span>
+    </div>
   </div>
-</div>
 
   <!-- نوار وضعیت: جان / امتیاز / مرحله + دکمه‌ها -->
   <div id="top-bar">
-    <!-- چپ: جان | امتیاز | مرحله -->
     <div id="top-left">
       <div>❤️ <span id="livesEl">3</span></div>
       <div>امتیاز: <span id="scoreEl">0</span></div>
       <div>مرحله: <span id="levelEl">1</span></div>
     </div>
 
-    <!-- راست: شروع/استپ، صدا، تم، راهنما، آرامش، پروفایل -->
     <div id="top-right">
       <button id="pauseBtn" class="iconBtn" title="شروع / توقف">⏸</button>
       <button id="soundBtn" class="iconBtn" title="صدا">🔊</button>
@@ -460,8 +463,23 @@
     <canvas id="game"></canvas>
   </div>
 
-  
-
+  <!-- نوار پایین -->
+  <div id="bottom-bar">
+    <div id="bottom-left"></div>
+    <div id="bottom-right">
+      <div id="dailyInner">
+        <span id="dailyLabel">تمرین روزانه امروز</span>
+        <div id="dailyDots">
+          <div class="dailyDot"></div>
+          <div class="dailyDot"></div>
+          <div class="dailyDot"></div>
+          <div class="dailyDot"></div>
+          <div class="dailyDot"></div>
+          <div class="dailyDot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- پاپ‌آپ نام کاربر -->
   <div id="nameOverlay" class="overlay">
@@ -493,7 +511,7 @@
     </div>
   </div>
 
-  <!-- درباره ما + ساخته شده توسط طاویتا -->
+  <!-- درباره ما -->
   <div id="aboutOverlay" class="overlay">
     <div class="box">
       <h3>درباره طاویتا 🌸</h3>
@@ -569,7 +587,7 @@
     </div>
   </div>
 
-  <!-- پاپ‌آپ آرامش (با دکمه 🧘 باز می‌شود) -->
+  <!-- پاپ‌آپ آرامش -->
   <div id="calmOverlay" class="overlay">
     <div class="box">
       <h3>لحظه‌ای آرامش 💙</h3>
@@ -632,14 +650,20 @@
 
     let w, h;
 
+    // ✅ نسخه اصلاح‌شده‌ی resizeCanvas
     function resizeCanvas(){
-      w = Math.min(window.innerWidth, 480);  
-h = Math.min(window.innerHeight - 120, 900);
+      const container = document.getElementById("game-container");
+      const rect = container.getBoundingClientRect();
+
+      w = Math.min(rect.width, 480);       // عرض مثل قبل
+      h = rect.height > 0 ? rect.height : Math.min(window.innerHeight - 120, 900);
+
       canvas.width = w;
       canvas.height = h;
     }
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("orientationchange", resizeCanvas);
 
     // تم روز/شب
     let currentTheme = "dark";
@@ -689,7 +713,6 @@ h = Math.min(window.innerHeight - 120, 900);
     }
     loadPlayerName();
 
-    // نمایش پاپ‌آپ نام در صورت نیاز
     (function initNameOverlay(){
       try{
         const raw = localStorage.getItem("tavitaName");
@@ -766,7 +789,6 @@ h = Math.min(window.innerHeight - 120, 900);
     }
     loadDaily();
 
-    // پاپ‌آپ تمرین روزانه – روی کادر پایین کلیک
     if(dailyInnerEl){
       dailyInnerEl.addEventListener("click",()=>{
         const msg = dailyCount === 0
@@ -842,7 +864,7 @@ h = Math.min(window.innerHeight - 120, 900);
       if(e.target===profileOverlay) profileOverlay.style.display="none";
     });
 
-    // متن‌ها
+    // متن‌ها و رنگ‌ها
     const badWords = [
       "تنبلی","دروغ","حسادت","غیبت","ناامیدی",
       "ترس","خشم","بدقولی","خودکم\u200cبینی","بی\u200cاحترامی"
@@ -859,7 +881,6 @@ h = Math.min(window.innerHeight - 120, 900);
       "خودکم\u200cبینی":"تو خیلی بیشتر از چیزی که فکر می‌کنی توانایی داری 🌟",
       "بی\u200cاحترامی":"انتخاب احترام، یعنی احترام به خودت و دیگران 💚"
     };
-    // هر عادت یک رنگ ثابت
     const habitColors = {
       "تنبلی":"#f97316",
       "دروغ":"#ef4444",
@@ -872,7 +893,6 @@ h = Math.min(window.innerHeight - 120, 900);
       "خودکم\u200cبینی":"#ec4899",
       "بی\u200cاحترامی":"#14b8a6"
     };
-
     const goodMessages = [
       "تو مهربونی رو انتخاب کردی ❤️",
       "تو در حال رشد و پیشرفتی 💪",
@@ -884,7 +904,6 @@ h = Math.min(window.innerHeight - 120, 900);
     ];
     function randomItem(arr){return arr[Math.floor(Math.random()*arr.length)];}
 
-    // کمکی برای روشن‌تر کردن رنگ
     function lightenColor(hex, amount){
       try{
         let c = hex.replace("#","");
@@ -1073,7 +1092,6 @@ h = Math.min(window.innerHeight - 120, 900);
     }
     resetGame();
 
-    // ری‌استارت بعد از گیم‌اور (از لول ۳ به بعد فقط یک مرحله برمی‌گردی عقب)
     function restartAfterGameOver(){
       const targetLevel = level>=3 ? Math.max(1, level-1) : 1;
 
@@ -1234,7 +1252,6 @@ h = Math.min(window.innerHeight - 120, 900);
     });
 
     function spawnPowerUp(x,y){
-      // ۸۰٪ پاورآپ خوب، ۲۰٪ توپ سیاه منفی
       let type;
       const roll = Math.random();
       if(roll < 0.8){
@@ -1448,7 +1465,7 @@ h = Math.min(window.innerHeight - 120, 900);
         ctx.fillRect(0,0,w,h);
       }
 
-      // آجرها: هر عادت رنگ خودش + گوشه‌های گرد و گرادیانت
+      // آجرها
       for(const b of bricks){
         let baseColor = habitColors[b.label] || "#ffb347";
         let color = baseColor;
@@ -1472,13 +1489,11 @@ h = Math.min(window.innerHeight - 120, 900);
           "#00000040";
         ctx.stroke();
 
-        // لایه براق روی آجر
         ctx.beginPath();
         drawRoundedRect(ctx,b.x+2,b.y+2,b.w-4,(b.h-4)/2,4);
         ctx.fillStyle = "rgba(255,255,255,0.25)";
         ctx.fill();
 
-        // متن عادت
         ctx.fillStyle="#111";
         ctx.font="9px Vazirmatn";
         ctx.textAlign="center";
@@ -1488,7 +1503,7 @@ h = Math.min(window.innerHeight - 120, 900);
         ctx.restore();
       }
 
-      // پاورآپ‌ها (دائره‌ها)
+      // پاورآپ‌ها
       for(const pu of powerUps){
         let c="#1abc9c";
         if(pu.type==="strength") c="#ff9f43";
@@ -1507,7 +1522,7 @@ h = Math.min(window.innerHeight - 120, 900);
         ctx.stroke();
       }
 
-      // پَد: در تم روز تیره‌تر
+      // پَد
       let paddleColor = currentTheme === "light" ? "#1f2937" : "#3ac7ff";
       ctx.fillStyle=paddleColor;
       ctx.fillRect(paddle.x,paddle.y,paddle.w,paddle.h);
@@ -1528,7 +1543,7 @@ h = Math.min(window.innerHeight - 120, 900);
         }
       }
 
-      // توپ – در تم روز قرمز، در تم شب سفید/طلایی
+      // توپ
       ctx.beginPath();
       ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
       let ballColor;
@@ -1550,8 +1565,8 @@ h = Math.min(window.innerHeight - 120, 900);
       requestAnimationFrame(loop);
     }
     requestAnimationFrame(loop);
- </script>
-<script src="/api/eitaa.js"></script>
-  
+  </script>
+
+  <script src="/api/eitaa.js"></script>
 </body>
 </html>
