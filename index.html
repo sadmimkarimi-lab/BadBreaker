@@ -17,14 +17,17 @@
       font-family:'Vazirmatn',sans-serif;
     }
     body{
-      background:#111533;
-      color:#fff;
-      display:flex;
-      flex-direction:column;
-      height:100vh;
-      overflow:hidden;
-      transition:background .2s ease,color .2s ease;
-    }
+  background:#111533;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  /* به‌جای height:100vh; این خط رو گذاشتیم */
+  min-height:100vh;
+  /* فقط اسکرول عمودی آزاد باشه */
+  overflow-x:hidden;
+  overflow-y:auto;
+  transition:background .2s ease,color .2s ease;
+}
 
     /* تم روشن */
     body.light-mode{
