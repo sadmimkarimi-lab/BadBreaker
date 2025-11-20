@@ -651,16 +651,37 @@
     let w, h;
 
     // ✅ نسخه اصلاح‌شده‌ی resizeCanvas
-    function resizeCanvas(){
-      const container = document.getElementById("game-container");
-      const rect = container.getBoundingClientRect();
+    function resizeCanvas() {
+  const container = document.getElementById("game-container");
+  const rect = container.getBoundingClientRect();
 
-      w = Math.min(rect.width, 480);       // عرض مثل قبل
-      h = rect.height > 0 ? rect.height : Math.min(window.innerHeight - 120, 900);
+  const maxWidth = 480;          // حداکثر عرض مثل قبل
+  const targetRatio = 1.4;       // نسبت ارتفاع به عرض (کارت خوشگل، نه خیلی دراز)
 
-      canvas.width = w;
-      canvas.height = h;
+  // عرض بازی
+  w = Math.min(rect.width, maxWidth);
+
+  // ارتفاع ایده‌آل بر اساس نسبت
+  let idealHeight = w * targetRatio;   // مثلا اگر w=360 → h≈504
+
+  // ارتفاع نهایی: از ارتفاع کانتینر بیشتر نشه
+  h = Math.min(idealHeight, rect.height);
+
+  canvas.width = w;
+  canvas.height = h;
+
+  // اگر بازی قبلاً ساخته شده، پد و توپ رو به جای درستشون ببریم
+  if (paddle && ball) {
+    paddle.y = h - 40;                 // پد همیشه 40px از پایین
+    if (paddle.x + paddle.w > w) {
+      paddle.x = w - paddle.w;
     }
+    if (ball.stuckToPaddle) {
+      ball.x = paddle.x + paddle.w / 2;
+      ball.y = paddle.y - ball.r - 1;
+    }
+  }
+}
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
     window.addEventListener("orientationchange", resizeCanvas);
