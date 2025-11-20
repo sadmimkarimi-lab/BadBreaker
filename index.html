@@ -159,8 +159,7 @@
     }
 #game-container{
   width:100%;
-  height:100%;
-  flex-grow:1;
+  flex:1;              /* فقط اجازه بده تو فلکس کش بیاد */
   display:flex;
   align-items:center;
   justify-content:center;
@@ -597,27 +596,39 @@
 
     let w, h;
 
-    function resizeCanvas() {
-  // عرض بازی مثل قبل
+function resizeCanvas() {
+  // عرض بازی
   w = Math.min(window.innerWidth * 0.95, 420);
 
-  // قدی که برای بقیه‌ی اجزا (تاپ‌بار، نوار پیشرفت، پیام، منوی پایین) لازم داریم
-  const otherUiHeight = 210; // تقریبی، برای موبایل خوب جواب می‌دهد
+  // ارتفاع واقعیِ بخش‌های بالا و پایین صفحه را اندازه بگیر
+  const topBarEl       = document.getElementById("top-bar");
+  const progressWrapEl = document.getElementById("progressWrap");
+  const hintBarEl      = document.getElementById("hint-bar");
+  const bottomBarEl    = document.getElementById("bottom-bar");
 
-  // ارتفاعی که برای خود بازی باقی می‌ماند
-  let available = window.innerHeight - otherUiHeight;
+  let reserved = 0;
+  if (topBarEl)       reserved += topBarEl.offsetHeight;
+  if (progressWrapEl) reserved += progressWrapEl.offsetHeight;
+  if (hintBarEl)      reserved += hintBarEl.offsetHeight;
+  if (bottomBarEl)    reserved += bottomBarEl.offsetHeight;
 
-  // یه حداقل و حداکثر منطقی برای قد بازی
-  if (available < 320) available = 320;  // خیلی کوتاه نشه
-  if (available > 620) available = 620;  // خیلی بلند نشه
+  const extra = 16; // کمی حاشیه بالا/پایین
+
+  let available = window.innerHeight - reserved - extra;
+
+  // حداقل و حداکثر منطقی برای قدِ بازی
+  const minH = 260;
+  const maxH = 620;
+  if (available < minH) available = minH;
+  if (available > maxH) available = maxH;
 
   h = available;
-  canvas.width = w;
+  canvas.width  = w;
   canvas.height = h;
 }
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
 
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
     // تم روز/شب
     let currentTheme = "dark";
     function applyTheme(mode){
