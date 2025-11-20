@@ -650,6 +650,12 @@
 
     let w, h;
 
+    // وضعیت بازی
+    let paddle,ball,bricks,powerUps,score,level,lives,
+        running,paused,strongBallTicks=0,
+        slowBallTicks=0,burstTicks=0,totalBricksLevel=0,
+        totalBrokenHabits=0;
+
     // ✅ نسخه اصلاح‌شده‌ی resizeCanvas
     function resizeCanvas() {
   const container = document.getElementById("game-container");
@@ -956,11 +962,7 @@
       ctx.closePath();
     }
 
-    // وضعیت بازی
-    let paddle,ball,bricks,powerUps,score,level,lives,
-        running,paused,strongBallTicks=0,
-        slowBallTicks=0,burstTicks=0,totalBricksLevel=0,
-        totalBrokenHabits=0;
+    
 
     function updateHUD(){
       scoreEl.textContent=score;
