@@ -321,7 +321,7 @@
       pointer-events:none;
     }
     .shopMessageVisible{
-      animation:shopFlash 1s ease-out forwards;
+      animation:shopFlash 1s.ease-out.forwards;
     }
     @keyframes shopFlash{
       0%{opacity:0;transform:translateY(-4px);}
@@ -440,6 +440,7 @@
       <p>◀ هر آجر یک عادت منفی است؛ وقتی می‌شکند، یک جمله‌ی مثبت و تقویت‌کننده بالا نشان داده می‌شود تا آرام‌آرام ذهن‌ات هم همراه بازی تغییر کند 🌱</p>
       <p>◀ هر مرحله که کامل می‌کنی، <b>۲ تا جون جدید</b> می‌گیری ❤️ و کم‌کم نوار پیشرفت بالا پر می‌شود؛ یعنی عادت‌های بیشتری را شکستی.</p>
       <p>◀ دایره‌های رنگی که از آجرها می‌افتد پاورآپ هستند؛ آن‌ها را بگیر تا: پد بزرگ‌تر شود، توپ قوی‌تر شود، توپ آهسته‌تر حرکت کند یا حالت چندتوپی فعال شود 😍</p>
+      <p>◀ حواست به توپ‌های سیاه هم باشد! اگر یک توپ سیاه بگیری، پدت کمی کوچکتر می‌شود و کنترل سخت‌تر می‌شود ⚫</p>
       <p>◀ در «شاپ» می‌توانی با امتیازهایی که جمع کردی، رفتارهای خوب (پاورآپ‌های دائم‌تر) بخری و بازی را راحت‌تر کنی.</p>
       <button class="closeBtn" id="closeHelp">فهمیدم، بزن بریم 💪</button>
     </div>
@@ -811,6 +812,20 @@
       "خودکم\u200cبینی":"تو خیلی بیشتر از چیزی که فکر می‌کنی توانایی داری 🌟",
       "بی\u200cاحترامی":"انتخاب احترام، یعنی احترام به خودت و دیگران 💚"
     };
+    // هر عادت یک رنگ ثابت
+    const habitColors = {
+      "تنبلی":"#f97316",
+      "دروغ":"#ef4444",
+      "حسادت":"#22c55e",
+      "غیبت":"#6366f1",
+      "ناامیدی":"#0ea5e9",
+      "ترس":"#facc15",
+      "خشم":"#dc2626",
+      "بدقولی":"#a855f7",
+      "خودکم\u200cبینی":"#ec4899",
+      "بی\u200cاحترامی":"#14b8a6"
+    };
+
     const goodMessages = [
       "تو مهربونی رو انتخاب کردی ❤️",
       "تو در حال رشد و پیشرفتی 💪",
@@ -821,6 +836,38 @@
       "تو الهام‌بخش اطرافیانی 💜"
     ];
     function randomItem(arr){return arr[Math.floor(Math.random()*arr.length)];}
+
+    // کمکی برای روشن‌تر کردن رنگ
+    function lightenColor(hex, amount){
+      try{
+        let c = hex.replace("#","");
+        if(c.length===3) c = c.split("").map(ch=>ch+ch).join("");
+        let r = parseInt(c.substring(0,2),16);
+        let g = parseInt(c.substring(2,4),16);
+        let b = parseInt(c.substring(4,6),16);
+        r = Math.min(255, Math.floor(r + (255-r)*amount));
+        g = Math.min(255, Math.floor(g + (255-g)*amount));
+        b = Math.min(255, Math.floor(b + (255-b)*amount));
+        return "#" + [r,g,b].map(v=>v.toString(16).padStart(2,"0")).join("");
+      }catch(e){
+        return hex;
+      }
+    }
+
+    function drawRoundedRect(ctx,x,y,w,h,r){
+      const rr = Math.min(r, w/2, h/2);
+      ctx.beginPath();
+      ctx.moveTo(x+rr,y);
+      ctx.lineTo(x+w-rr,y);
+      ctx.quadraticCurveTo(x+w,y,x+w,y+rr);
+      ctx.lineTo(x+w,y+h-rr);
+      ctx.quadraticCurveTo(x+w,y+h,x+w-rr,y+h);
+      ctx.lineTo(x+rr,y+h);
+      ctx.quadraticCurveTo(x,y+h,x,y+h-rr);
+      ctx.lineTo(x,y+rr);
+      ctx.quadraticCurveTo(x,y,x+rr,y);
+      ctx.closePath();
+    }
 
     // وضعیت بازی
     let paddle,ball,bricks,powerUps,score,level,lives,
@@ -979,6 +1026,47 @@
     }
     resetGame();
 
+    // ری‌استارت بعد از گیم‌اور (از لول ۳ به بعد فقط یک مرحله برمی‌گردی عقب)
+    function restartAfterGameOver(){
+      const targetLevel = level>=3 ? Math.max(1, level-1) : 1;
+
+      const padW = paddle.minW;
+      paddle.x = (w-padW)/2;
+      paddle.y = h-40;
+      paddle.w = padW;
+      paddle.h = 12;
+      paddle.speed = 9;
+
+      ball.x = w/2;
+      ball.y = h-60;
+      ball.r = 6;
+      ball.vx = 3.5*(Math.random()<0.5?-1:1);
+      ball.vy = -4.5;
+      ball.stuckToPaddle = true;
+
+      powerUps = [];
+      strongBallTicks = 0;
+      slowBallTicks = 0;
+      burstTicks = 0;
+      lives = 3;
+      level = targetLevel;
+
+      buildLevel();
+      updateHUD();
+      updateProgressBar(0);
+
+      flashHint(
+        targetLevel===1
+          ? "دوباره از اول شروع می‌کنیم؛ این‌بار قوی‌تر 💪"
+          : `برگشتی به مرحله ${targetLevel}؛ این‌بار حواست رو بیشتر جمع کن 😉`,
+        2600
+      );
+
+      paused = false;
+      running = true;
+      pauseBtn.textContent = "⏸";
+    }
+
     function movePaddleTo(clientX){
       const rect=canvas.getBoundingClientRect();
       const x=(clientX-rect.left)*(w/rect.width);
@@ -1089,20 +1177,25 @@
     }
     retryBtn.onclick=()=>{
       gameOverOverlay.style.display="none";
-      resetGame();
-      running=true;
+      restartAfterGameOver();
     };
     gameOverOverlay.addEventListener("click",e=>{
       if(e.target===gameOverOverlay){
         gameOverOverlay.style.display="none";
-        resetGame();
-        running=true;
+        restartAfterGameOver();
       }
     });
 
     function spawnPowerUp(x,y){
-      const types=["pad","strength","slow","burst"];
-      const type=types[Math.floor(Math.random()*types.length)];
+      // ۸۰٪ پاورآپ خوب، ۲۰٪ توپ سیاه منفی
+      let type;
+      const roll = Math.random();
+      if(roll < 0.8){
+        const posTypes = ["pad","strength","slow","burst"];
+        type = posTypes[Math.floor(Math.random()*posTypes.length)];
+      }else{
+        type = "bad";
+      }
       const labelGood=randomItem(goodMessages);
       powerUps.push({x,y,r:9,vy:1.3,type,labelGood});
     }
@@ -1119,6 +1212,9 @@
       }else if(pu.type==="burst"){
         burstTicks+=260;
         flashHint("چندتوپی فعال شد 😍🔥",2500);
+      }else if(pu.type==="bad"){
+        paddle.w = Math.max(paddle.w-12,paddle.minW);
+        flashHint("یک توپ سیاه گرفتی؛ پدت کوچکتر شد، حواست رو جمع کن 🙃",2600);
       }
       beep(900,0.1);
     }
@@ -1305,17 +1401,37 @@
         ctx.fillRect(0,0,w,h);
       }
 
+      // آجرها: هر عادت رنگ خودش + گوشه‌های گرد و گرادیانت
       for(const b of bricks){
-        let color="#ffb347";
-        if(b.type==="ice") color="#66d9ff";
-        else if(b.type==="strong") color="#ff6f91";
-        else if(b.type==="bomb") color="#c084ff";
-        else if(b.type==="golden") color="#ffd700";
-        ctx.fillStyle=color;
-        ctx.fillRect(b.x,b.y,b.w,b.h);
-        ctx.fillStyle="#00000040";
-        ctx.fillRect(b.x,b.y+b.h-3,b.w,3);
+        let baseColor = habitColors[b.label] || "#ffb347";
+        let color = baseColor;
+        if(b.type==="golden") color = "#ffd700";
+
+        const grad = ctx.createLinearGradient(b.x,b.y,b.x,b.y+b.h);
+        grad.addColorStop(0, lightenColor(color,0.22));
+        grad.addColorStop(1, color);
+
         ctx.save();
+        drawRoundedRect(ctx,b.x,b.y,b.w,b.h,6);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        ctx.lineWidth = (b.type==="bomb") ? 2 : 1;
+        ctx.strokeStyle =
+          b.type==="ice" ? "#60a5fa" :
+          b.type==="strong" ? "#f97373" :
+          b.type==="bomb" ? "#a855f7" :
+          b.type==="golden" ? "#facc15" :
+          "#00000040";
+        ctx.stroke();
+
+        // لایه براق روی آجر
+        ctx.beginPath();
+        drawRoundedRect(ctx,b.x+2,b.y+2,b.w-4,(b.h-4)/2,4);
+        ctx.fillStyle = "rgba(255,255,255,0.25)";
+        ctx.fill();
+
+        // متن عادت
         ctx.fillStyle="#111";
         ctx.font="9px Vazirmatn";
         ctx.textAlign="center";
@@ -1325,11 +1441,13 @@
         ctx.restore();
       }
 
+      // پاورآپ‌ها (دائره‌ها)
       for(const pu of powerUps){
         let c="#1abc9c";
         if(pu.type==="strength") c="#ff9f43";
         else if(pu.type==="slow") c="#9b59b6";
         else if(pu.type==="burst") c="#e91e63";
+        else if(pu.type==="bad") c="#111827";
         ctx.beginPath();
         ctx.arc(pu.x,pu.y,pu.r,0,Math.PI*2);
         const g2=ctx.createRadialGradient(pu.x,pu.y,2,pu.x,pu.y,pu.r+3);
@@ -1337,7 +1455,7 @@
         g2.addColorStop(1,c);
         ctx.fillStyle=g2;
         ctx.fill();
-        ctx.strokeStyle="#ffffffaa";
+        ctx.strokeStyle = pu.type==="bad" ? "#ef4444" : "#ffffffaa";
         ctx.lineWidth=1;
         ctx.stroke();
       }
@@ -1363,7 +1481,7 @@
         }
       }
 
-      // توپ – در تم روز قرمز/مشکی، در تم شب سفید/طلایی
+      // توپ – در تم روز قرمز، در تم شب سفید/طلایی
       ctx.beginPath();
       ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
       let ballColor;
