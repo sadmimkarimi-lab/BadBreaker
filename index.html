@@ -197,9 +197,9 @@
   width:100%;
   flex-grow:1;
   display:flex;
-  align-items:center;      /* افقی وسط بمونه */
-  justify-content:flex-start; /* ولی از بالا شروع بشه، نه وسط */
-  padding:8px 0 16px;      /* یه فاصله کوچیک از بالا و پایین */
+  align-items:center;
+  justify-content:center; /* بازی دقیق وسط */
+  padding:8px 0 16px;
 }
     canvas{
       background:#141947;
@@ -633,8 +633,8 @@
     let w, h;
 
     function resizeCanvas(){
-      w = Math.min(window.innerWidth*0.95,420);
-      h = Math.min(window.innerHeight*0.8,720);
+      w = Math.min(window.innerWidth, 480);  
+h = Math.min(window.innerHeight - 120, 900);
       canvas.width = w;
       canvas.height = h;
     }
