@@ -2,7 +2,7 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8" />
-  <title>شکستن عادت‌های بد - Tavita</title>
+  <title>بازی بدشکن طاویتا</title>
   <!-- فونت فارسی -->
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
@@ -252,7 +252,7 @@
       align-items:center;
       justify-content:center;
       z-index:10;
-    }
+      }
     .box{
       background:#1b144f;
       padding:16px;
@@ -368,12 +368,13 @@
       <div>مرحله: <span id="levelEl">1</span></div>
     </div>
 
-    <!-- راست: شروع/استپ، صدا، تم، راهنما، پروفایل -->
+    <!-- راست: شروع/استپ، صدا، تم، راهنما، آرامش، پروفایل -->
     <div id="top-right">
       <button id="pauseBtn" class="iconBtn" title="شروع / توقف">⏸</button>
       <button id="soundBtn" class="iconBtn" title="صدا">🔊</button>
       <button id="themeBtn" class="iconBtn" title="روز / شب">🌙</button>
       <button id="helpBtn" class="iconBtn" title="راهنما">❓</button>
+      <button id="calmBtn" class="iconBtn" title="لحظه آرامش">🧘</button>
       <button id="profileBtn" class="iconBtn" title="پروفایل">👤</button>
     </div>
   </div>
@@ -434,7 +435,7 @@
   <!-- راهنمای بازی -->
   <div id="helpOverlay" class="overlay">
     <div class="box">
-      <h3>راهنمای بازی عادت‌شکن طاویتا 🎮</h3>
+      <h3>راهنمای بازی بدشکن طاویتا 🎮</h3>
       <p>◀ با انگشت یا ماوس، پَد پایین صفحه را حرکت بده تا توپ به آجرها برخورد کند و عادت‌های بد (تنبلی، خشم، ناامیدی و...) را یکی‌یکی بشکنی.</p>
       <p>◀ هر آجر یک عادت منفی است؛ وقتی می‌شکند، یک جمله‌ی مثبت و تقویت‌کننده بالا نشان داده می‌شود تا آرام‌آرام ذهن‌ات هم همراه بازی تغییر کند 🌱</p>
       <p>◀ هر مرحله که کامل می‌کنی، <b>۲ تا جون جدید</b> می‌گیری ❤️ و کم‌کم نوار پیشرفت بالا پر می‌شود؛ یعنی عادت‌های بیشتری را شکستی.</p>
@@ -444,11 +445,11 @@
     </div>
   </div>
 
-  <!-- درباره ما + ساخت طاویتا -->
+  <!-- درباره ما + ساخته شده توسط طاویتا -->
   <div id="aboutOverlay" class="overlay">
     <div class="box">
       <h3>درباره طاویتا 🌸</h3>
-      <p>این بازی توسط «طاویتا» طراحی شده تا به شکل ساده و جذاب، تمرین ترک عادت‌های بد و تقویت ذهن مثبت را لذت‌بخش‌تر کند.</p>
+      <p>بازی <b>بدشکن طاویتا</b> طوری طراحی شده که تمرین ترک عادت‌های بد و تقویت ذهن مثبت را تبدیل به یک بازی ساده و جذاب کند.</p>
       <p>با هر بار شکستن یک آجر، فقط در بازی پیش نمی‌روی؛ بلکه یک قدم کوچک برای رشد شخصی و آرامش درونی‌ات برمی‌داری.</p>
       <p style="font-size:12px;opacity:.9;margin-top:8px;">
         ساخته شده توسط <b>طاویتا</b> ·
@@ -461,7 +462,7 @@
   <!-- پروفایل -->
   <div id="profileOverlay" class="overlay">
     <div class="box">
-      <h3>پروفایل عادت‌شکن 👤</h3>
+      <h3>پروفایل بدشکن 👤</h3>
       <div id="profileStats">
         <p>نام: <b><span id="profName">کاربر طاویتا</span></b></p>
         <p>مرحله فعلی: <b><span id="profLevel">1</span></b></p>
@@ -520,7 +521,7 @@
     </div>
   </div>
 
-  <!-- پاپ‌آپ آرامش (دیگه خودکار باز نمی‌شود) -->
+  <!-- پاپ‌آپ آرامش (با دکمه 🧘 باز می‌شود) -->
   <div id="calmOverlay" class="overlay">
     <div class="box">
       <h3>لحظه‌ای آرامش 💙</h3>
@@ -541,6 +542,7 @@
     const aboutBtn = document.getElementById("aboutBtn");
     const profileBtn = document.getElementById("profileBtn");
     const themeBtn = document.getElementById("themeBtn");
+    const calmBtn = document.getElementById("calmBtn");
     const hintEl = document.getElementById("hint");
     const helpOverlay = document.getElementById("helpOverlay");
     const closeHelpBtn = document.getElementById("closeHelp");
@@ -731,7 +733,10 @@
       if(e.target===dailyOverlay) dailyOverlay.style.display="none";
     });
 
-    // پاپ‌آپ آرامش (فقط اگر بعداً خودت دکمه براش بذاری)
+    // دکمه لحظه آرامش
+    calmBtn.onclick = ()=>{
+      calmOverlay.style.display = "flex";
+    };
     closeCalmBtn.onclick = ()=>{ calmOverlay.style.display="none"; };
     calmOverlay.addEventListener("click",e=>{
       if(e.target===calmOverlay) calmOverlay.style.display="none";
@@ -1057,7 +1062,6 @@
         }else if(item==="slow"){
           slowBallTicks+=900;
           flashHint("توپ کمی آهسته‌تر شد؛ کنترل بهتر 💙",2200);
-          // calmOverlay دیگه خودکار باز نمیشه
         }
         const row=document.querySelector(`.shopItem[data-item-row="${item}"]`);
         if(row){
@@ -1112,12 +1116,10 @@
       }else if(pu.type==="slow"){
         slowBallTicks+=800;
         flashHint("توپ کمی آهسته‌تر شد 💙",2000);
-        // calmOverlay اینجا هم دیگه باز نمیشه
       }else if(pu.type==="burst"){
         burstTicks+=260;
         flashHint("چندتوپی فعال شد 😍🔥",2500);
       }
-      // این پیام دیگه پاپ‌آپ بزرگ نیست؛ فقط هینت بالاست
       beep(900,0.1);
     }
 
@@ -1361,12 +1363,12 @@
         }
       }
 
-      // توپ
+      // توپ – در تم روز قرمز/مشکی، در تم شب سفید/طلایی
       ctx.beginPath();
       ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);
       let ballColor;
       if(currentTheme === "light"){
-        ballColor = strongBallTicks>0 ? "#f97316" : "#dc2626";
+        ballColor = strongBallTicks>0 ? "#b91c1c" : "#dc2626";
       }else{
         ballColor = strongBallTicks>0 ? "#fffb8a" : "#ffffff";
       }
@@ -1382,7 +1384,7 @@
       draw();
       requestAnimationFrame(loop);
     }
-    loop();
+    requestAnimationFrame(loop);
   </script>
 </body>
 </html>
