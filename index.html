@@ -8,496 +8,432 @@
 
   <!-- فونت فارسی -->
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <style>
-    html, body{
-      height:100%;
-    }
-    
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:'Vazirmatn',sans-serif;
-    }
 
-    /* ✅ بدنه: ریسپانسیو مثل بازی کلمات – اجازه‌ی اسکرول، نه قفل کامل */
-body{
-  background:#111533;
-  color:#fff;
-  display:flex;
-  flex-direction:column;
-  min-height:100vh;     /* فقط حداقل، نه قفل‌شدن */
-  height:auto;
-  overflow-x:hidden;
-  overflow-y:auto;      /* اسکرول عمودی آزاد مثل بازی کلمات */
-  transition:background .2s ease,color .2s ease;
-}
-
-    /* تم روشن */
-    body.light-mode{
-      background:#f4f4fb;
-      color:#111827;
-    }
-    body.light-mode canvas{
-      background:#ffffff;
-      box-shadow:0 0 18px rgba(15,23,42,.25);
-    }
-    body.light-mode #hint{
-      background:#e5e7eb;
-      color:#111827;
-      border-color:#d1d5db;
-    }
-    body.light-mode #dailyInner{
-      background:#e5e7eb;
-      border-color:#d1d5db;
-    }
-    body.light-mode #progressBarOuter{
-      background:#e5e7eb;
-    }
-    body.light-mode #bottom-bar{
-      background:rgba(255,255,255,.9);
-      color:#111827;
-    }
-    body.light-mode .box{
-      background:#ffffff;
-      color:#111827;
-    }
-    body.light-mode .shopItem{
-      background:#e5e7ff;
-      color:#111827;
-    }
-    body.light-mode .shopItem span{
-      color:#111827;
-    }
-    body.light-mode .shopItem button{
-      background:#f97316;
-      color:#111827;
-    }
-
-    /* هدر بالای صفحه: لوگو + عنوان + دکمه‌ها */
-    #header-bar{
-      width:100%;
-      padding:6px 10px 4px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      direction:ltr;
-      gap:10px;
-    }
-
-    #header-left{
-      display:flex;
-      gap:8px;
-      direction:rtl;
-    }
-
-    #header-right{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      direction:rtl;
-    }
-
-    #gameLogo{
-      width:36px;
-      height:36px;
-      border-radius:999px;
-      object-fit:cover;
-    }
-
-    #gameTitle{
-      font-size:18px;
-      font-weight:700;
-    }
-
-    #top-bar{
-      width:100%;
-      padding:4px 10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      direction:ltr;
-      font-size:14px;
-      gap:8px;
-    }
-    #top-left{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      direction:rtl;
-      font-size:13px;
-    }
-    #top-right{
-      display:flex;
-      gap:4px;
-      align-items:center;
-    }
-    .iconBtn{
-      border:none;
-      padding:2px 6px;
-      border-radius:999px;
-      background:#2c2e7a;
-      color:#fff;
-      font-size:14px;
-      box-shadow:0 0 6px rgba(0,0,0,.4);
-      cursor:pointer;
-      white-space:nowrap;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-width:26px;
-      min-height:26px;
-    }
-    .iconBtn:active{transform:scale(.97)}
-    body.light-mode .iconBtn{
-      background:#e5e7eb;
-      color:#111827;
-      box-shadow:0 0 4px rgba(148,163,184,.6);
-    }
-
-    /* نوار پیشرفت */
-    #progressWrap{
-      width:100%;
-      padding:0 10px 4px;
-    }
-    #progressBarOuter{
-      width:100%;
-      height:6px;
-      border-radius:999px;
-      background:#22244a;
-      overflow:hidden;
-      box-shadow:0 0 6px rgba(0,0,0,0.6);
-    }
-    #progressBarInner{
-      width:0%;
-      height:100%;
-      background:linear-gradient(90deg,#22c55e,#a3e635);
-      transition:width .2s ease-out;
-    }
-
-    /* نوار پیام */
-    #hint-bar{
-      width:100%;
-      padding:4px 10px 4px;
-      font-size:12px;
-      direction:rtl;
-      color:#e5e7eb;
-      opacity:.95;
-    }
-    #hint{
-      width:100%;
-      text-align:right;
-      background:#1f2937;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid #374151;
-      box-shadow:0 0 8px rgba(0,0,0,.35);
-    }
-
-    /* ✅ کانتینر بازی: همیشه فضای باقی‌مانده صفحه را پر می‌کند */
-#game-container{
-  width:100%;
-  flex:1;                   /* هرچی از قدِ صفحه می‌مونه، برای بازی */
-  display:flex;
-  align-items:center;       /* وسط عمودی */
-  justify-content:center;   /* وسط افقی */
-  padding:0 10px 6px;
-}
-    canvas{
-      background:#141947;
-      border-radius:14px;
-      box-shadow:0 0 18px rgba(0,0,0,.7);
-      touch-action:none;
-    }
-
-    /* نوار پایین: شاپ + درباره + تمرین روزانه */
-    #bottom-bar{
-      width:100%;
-      padding:6px 10px 10px;
-      font-size:12px;
-      direction:rtl;
-      opacity:.9;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-      background:rgba(0,0,0,.12);
-    }
-
-    #bottom-left{
-      display:flex;
-      gap:6px;
-      flex-wrap:wrap;
-      justify-content:flex-start;
-    }
-
-    #bottom-right{
-      margin-right:auto;
-      display:flex;
-      justify-content:flex-end;
-      min-width:180px;
-    }
-
-    .btn{
-      border:none;
-      padding:6px 12px;
-      border-radius:999px;
-      background:#1abc9c;
-      color:#fff;
-      font-size:12px;
-      cursor:pointer;
-      box-shadow:0 0 8px rgba(0,0,0,.5);
-      white-space:nowrap;
-    }
-    .btn-shop{background:#ff8c00;}
-    .btn:active{transform:scale(.97)}
-    body.light-mode .btn{
-      box-shadow:0 0 5px rgba(148,163,184,.6);
-    }
-
-    /* تمرین روزانه پایین سمت راست */
-    #dailyInner{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-      background:#161b3c;
-      border-radius:999px;
-      padding:4px 10px;
-      border:1px solid #272a5e;
-      cursor:pointer;
-      min-width:190px;
-    }
-    #dailyLabel{
-      white-space:nowrap;
-      opacity:.9;
-      font-size:11px;
-    }
-    #dailyDots{
-      display:flex;
-      gap:4px;
-    }
-    .dailyDot{
-      width:10px;
-      height:10px;
-      border-radius:999px;
-      border:1px solid #4b5563;
-      background:transparent;
-      box-shadow:none;
-      transition:all .2s ease-out;
-    }
-    .dailyDot.filled{
-      background:radial-gradient(circle at 30% 30%,#facc15,#f97316);
-      border-color:#facc15;
-      box-shadow:0 0 8px rgba(250,204,21,.8);
-    }
-
-    .overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.7);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:10;
-    }
-    .box{
-      background:#1b144f;
-      padding:16px;
-      border-radius:16px;
-      width:90%;
-      max-width:380px;
-      box-shadow:0 0 18px rgba(0,0,0,.8);
-      direction:rtl;
-      text-align:right;
-      font-size:13px;
-      line-height:1.7;
-      position:relative;
-      color:#f9fafb;
-    }
-    .box h3{
-      margin-bottom:8px;
-      font-size:16px;
-    }
-    .box p{margin:4px 0;}
-    .closeBtn{
-      margin-top:10px;
-      width:100%;
-      border:none;
-      padding:7px 14px;
-      border-radius:999px;
-      background:#4444aa;
-      color:#fff;
-      font-size:13px;
-      cursor:pointer;
-      box-shadow:0 0 8px rgba(0,0,0,.5);
-    }
-    .closeBtn:active{transform:scale(.97)}
-
-    .shopItem{
-      background:#24145f;
-      padding:8px;
-      border-radius:10px;
-      margin:6px 0;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      font-size:13px;
-      transition:transform .15s ease,box-shadow .15s ease;
-    }
-    .shopItem span{display:block}
-    .shopItem button{
-      padding:4px 10px;
-      font-size:11px;
-      border:none;
-      border-radius:999px;
-      background:#ff8c00;
-      color:#fff;
-      cursor:pointer;
-    }
-    .shopItem.bought{
-      transform:scale(1.03);
-      box-shadow:0 0 14px rgba(46,204,113,.8);
-    }
-    #shopMessage{
-      position:absolute;
-      top:4px;
-      left:12px;
-      font-size:11px;
-      color:#2ecc71;
-      opacity:0;
-      pointer-events:none;
-    }
-    .shopMessageVisible{
-      animation:shopFlash 1s ease-out forwards;
-    }
-    @keyframes shopFlash{
-      0%{opacity:0;transform:translateY(-4px);}
-      20%{opacity:1;transform:translateY(0);}
-      80%{opacity:1;}
-      100%{opacity:0;transform:translateY(-6px);}
-    }
-
-    #gameOverBox p{margin:4px 0;}
-
-    /* افکت +۲ جون */
-    .lifeGain{
-      position:fixed;
-      top:6px;
-      left:50%;
-      transform:translateX(-50%);
-      font-size:14px;
-      color:#f97316;
-      text-shadow:0 0 6px rgba(0,0,0,.7);
-      animation:lifeFloat 1s ease-out forwards;
-      z-index:20;
-      pointer-events:none;
-    }
-    @keyframes lifeFloat{
-      0%{opacity:0;transform:translate(-50%,0);}
-      30%{opacity:1;transform:translate(-50%,-6px);}
-      100%{opacity:0;transform:translate(-50%,-22px);}
-    }
-
-    /* پروفایل */
-    #profileStats{
-      font-size:13px;
-      margin-top:6px;
-      line-height:1.8;
-    }
-
-    /* ✅ تنظیمات اضافه برای دسکتاپ */
-@media (min-width: 992px){
-  #game-container{
-    max-width:900px;
-    margin:0 auto;
+<style>
+  html, body{
+    height:100%;
   }
-}
 
-    
-/* 📱 تنظیمات مخصوص موبایل – کاملاً شبیه بازی کلمات */
-@media (max-width: 768px){
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Vazirmatn',sans-serif;
+  }
 
-  /* بدنه آزاد و ریسپانسیو */
+  /* اندازه‌ی پایه متن – روی دسکتاپ کمی بزرگ‌تر */
+  html{ font-size:14px; }
+  @media (min-width:768px){
+    html{ font-size:16px; }
+  }
+  @media (min-width:1200px){
+    html{ font-size:18px; }
+  }
+
+  /* بدنه */
   body{
-    font-size:14px;
+    background:#111533;
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    overflow-x:hidden;
+    overflow-y:auto;
+    transition:background .2s ease,color .2s ease;
   }
 
-  /* هدر */
+  /* تم روشن */
+  body.light-mode{
+    background:#f4f4fb;
+    color:#111827;
+  }
+  body.light-mode canvas{
+    background:#ffffff;
+    box-shadow:0 0 18px rgba(15,23,42,.25);
+  }
+  body.light-mode #hint{
+    background:#e5e7eb;
+    color:#111827;
+    border-color:#d1d5db;
+  }
+  body.light-mode #dailyInner{
+    background:#e5e7eb;
+    border-color:#d1d5db;
+  }
+  body.light-mode #progressBarOuter{
+    background:#e5e7eb;
+  }
+  body.light-mode #bottom-bar{
+    background:rgba(255,255,255,.9);
+    color:#111827;
+  }
+  body.light-mode .box{
+    background:#ffffff;
+    color:#111827;
+  }
+  body.light-mode .shopItem{
+    background:#e5e7ff;
+    color:#111827;
+  }
+  body.light-mode .shopItem span{
+    color:#111827;
+  }
+  body.light-mode .shopItem button{
+    background:#f97316;
+    color:#111827;
+  }
+
+  /* هدر بالا */
   #header-bar{
-    padding:4px 8px 2px;
-    gap:6px;
+    width:100%;
+    padding:0.4rem 0.75rem 0.25rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:0.5rem;
+    flex-wrap:wrap;
+    direction:ltr;
   }
-  #header-left,
+  #header-left{
+    display:flex;
+    gap:0.5rem;
+    flex-wrap:wrap;
+    direction:rtl;
+  }
   #header-right{
-    gap:6px;
+    display:flex;
+    gap:0.5rem;
+    align-items:center;
+    direction:rtl;
   }
+
   #gameLogo{
-    width:28px;
-    height:28px;
+    width:2.4rem;
+    height:2.4rem;
+    border-radius:999px;
+    object-fit:cover;
   }
   #gameTitle{
-    font-size:15px;
+    font-size:1rem;
+    font-weight:700;
   }
 
-  /* نوار بالا */
+  /* نوار بالایی وضعیت */
   #top-bar{
-    padding:2px 8px;
-    font-size:12px;
-    gap:6px;
+    width:100%;
+    padding:0.25rem 0.75rem;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:0.5rem;
+    flex-wrap:wrap;
+    direction:ltr;
+    font-size:0.85rem;
   }
-  .iconBtn{
-    min-width:24px;
-    min-height:24px;
-    font-size:12px;
-    padding:2px 6px;
+  #top-left{
+    display:flex;
+    gap:0.6rem;
+    align-items:center;
+    direction:rtl;
+    flex-wrap:wrap;
+  }
+  #top-right{
+    display:flex;
+    gap:0.25rem;
+    align-items:center;
+    flex-wrap:wrap;
   }
 
-  /* نوار پیام و پیشرفت */
-  #progressWrap{
-    padding:0 8px 2px;
+  .iconBtn{
+    border:none;
+    padding:0.15rem 0.45rem;
+    border-radius:999px;
+    background:#2c2e7a;
+    color:#fff;
+    font-size:0.85rem;
+    box-shadow:0 0 6px rgba(0,0,0,.4);
+    cursor:pointer;
+    white-space:nowrap;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-width:1.8rem;
+    min-height:1.8rem;
   }
+  .iconBtn:active{transform:scale(.97);}
+  body.light-mode .iconBtn{
+    background:#e5e7eb;
+    color:#111827;
+    box-shadow:0 0 4px rgba(148,163,184,.6);
+  }
+
+  /* نوار پیشرفت */
+  #progressWrap{
+    width:100%;
+    padding:0 0.75rem 0.3rem;
+  }
+  #progressBarOuter{
+    width:100%;
+    height:0.4rem;
+    border-radius:999px;
+    background:#22244a;
+    overflow:hidden;
+    box-shadow:0 0 6px rgba(0,0,0,0.6);
+  }
+  #progressBarInner{
+    width:0%;
+    height:100%;
+    background:linear-gradient(90deg,#22c55e,#a3e635);
+    transition:width .2s ease-out;
+  }
+
+  /* نوار پیام */
   #hint-bar{
-    padding:2px 8px;
-    font-size:11px;
+    width:100%;
+    padding:0.25rem 0.75rem;
+    font-size:0.8rem;
+    direction:rtl;
+    color:#e5e7eb;
+    opacity:.95;
   }
   #hint{
-    padding:5px 9px;
+    width:100%;
+    text-align:right;
+    background:#1f2937;
+    padding:0.45rem 0.75rem;
+    border-radius:999px;
+    border:1px solid #374151;
+    box-shadow:0 0 8px rgba(0,0,0,.35);
   }
 
   /* کانتینر بازی */
   #game-container{
-    padding:0 6px 6px;
-    align-items:flex-start;
+    width:100%;
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0 0.75rem 0.75rem;
+  }
+  canvas{
+    display:block;
+    background:#141947;
+    border-radius:14px;
+    box-shadow:0 0 18px rgba(0,0,0,.7);
+    max-width:100%;
   }
 
   /* نوار پایین */
   #bottom-bar{
-    padding:4px 8px 8px;
-    font-size:11px;
-    gap:4px;
+    width:100%;
+    padding:0.45rem 0.75rem 0.75rem;
+    font-size:0.8rem;
+    direction:rtl;
+    opacity:.9;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:0.5rem;
+    flex-wrap:wrap;
+    background:rgba(0,0,0,.12);
   }
-  .btn{
-    padding:5px 10px;
-    font-size:11px;
+  #bottom-left{
+    display:flex;
+    gap:0.4rem;
+    flex-wrap:wrap;
+    justify-content:flex-start;
+  }
+  #bottom-right{
+    margin-right:auto;
+    display:flex;
+    justify-content:flex-end;
+    min-width:11rem;
   }
 
-  /* پاپ‌آپ‌ها */
+  .btn{
+    border:none;
+    padding:0.35rem 0.8rem;
+    border-radius:999px;
+    background:#1abc9c;
+    color:#fff;
+    font-size:0.8rem;
+    cursor:pointer;
+    box-shadow:0 0 8px rgba(0,0,0,.5);
+    white-space:nowrap;
+  }
+  .btn-shop{background:#ff8c00;}
+  .btn:active{transform:scale(.97);}
+  body.light-mode .btn{
+    box-shadow:0 0 5px rgba(148,163,184,.6);
+  }
+
+  /* تمرین روزانه */
+  #dailyInner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:0.5rem;
+    background:#161b3c;
+    border-radius:999px;
+    padding:0.3rem 0.8rem;
+    border:1px solid #272a5e;
+    cursor:pointer;
+    min-width:11.5rem;
+  }
+  #dailyLabel{
+    white-space:nowrap;
+    opacity:.9;
+    font-size:0.75rem;
+  }
+  #dailyDots{
+    display:flex;
+    gap:0.25rem;
+  }
+  .dailyDot{
+    width:0.65rem;
+    height:0.65rem;
+    border-radius:999px;
+    border:1px solid #4b5563;
+    background:transparent;
+    box-shadow:none;
+    transition:all .2s ease-out;
+  }
+  .dailyDot.filled{
+    background:radial-gradient(circle at 30% 30%,#facc15,#f97316);
+    border-color:#facc15;
+    box-shadow:0 0 8px rgba(250,204,21,.8);
+  }
+
+  /* اوورلی‌ها */
+  .overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:10;
+  }
   .box{
-    padding:12px;
-    font-size:12px;
+    background:#1b144f;
+    padding:1rem;
+    border-radius:1rem;
+    width:90%;
+    max-width:380px;
+    box-shadow:0 0 18px rgba(0,0,0,.8);
+    direction:rtl;
+    text-align:right;
+    font-size:0.85rem;
+    line-height:1.7;
+    position:relative;
+    color:#f9fafb;
   }
   .box h3{
-    font-size:14px;
+    margin-bottom:0.5rem;
+    font-size:1rem;
   }
+  .box p{margin:0.25rem 0;}
   .closeBtn{
-    padding:6px 12px;
-    font-size:12px;
+    margin-top:0.6rem;
+    width:100%;
+    border:none;
+    padding:0.5rem 0.9rem;
+    border-radius:999px;
+    background:#4444aa;
+    color:#fff;
+    font-size:0.85rem;
+    cursor:pointer;
+    box-shadow:0 0 8px rgba(0,0,0,.5);
   }
-}
-    
-  </style>
+  .closeBtn:active{transform:scale(.97);}
+
+  /* شاپ */
+  .shopItem{
+    background:#24145f;
+    padding:0.5rem;
+    border-radius:0.6rem;
+    margin:0.4rem 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:0.85rem;
+    transition:transform .15s ease,box-shadow .15s ease;
+  }
+  .shopItem span{display:block;}
+  .shopItem button{
+    padding:0.25rem 0.7rem;
+    font-size:0.75rem;
+    border:none;
+    border-radius:999px;
+    background:#ff8c00;
+    color:#fff;
+    cursor:pointer;
+  }
+  .shopItem.bought{
+    transform:scale(1.03);
+    box-shadow:0 0 14px rgba(46,204,113,.8);
+  }
+  #shopMessage{
+    position:absolute;
+    top:4px;
+    left:0.8rem;
+    font-size:0.75rem;
+    color:#2ecc71;
+    opacity:0;
+    pointer-events:none;
+  }
+  .shopMessageVisible{
+    animation:shopFlash 1s ease-out forwards;
+  }
+  @keyframes shopFlash{
+    0%{opacity:0;transform:translateY(-4px);}
+    20%{opacity:1;transform:translateY(0);}
+    80%{opacity:1;}
+    100%{opacity:0;transform:translateY(-6px);}
+  }
+
+  #gameOverBox p{margin:0.25rem 0;}
+
+  /* افکت +۲ جون */
+  .lifeGain{
+    position:fixed;
+    top:6px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:0.9rem;
+    color:#f97316;
+    text-shadow:0 0 6px rgba(0,0,0,.7);
+    animation:lifeFloat 1s ease-out forwards;
+    z-index:20;
+    pointer-events:none;
+  }
+  @keyframes lifeFloat{
+    0%{opacity:0;transform:translate(-50%,0);}
+    30%{opacity:1;transform:translate(-50%,-6px);}
+    100%{opacity:0;transform:translate(-50%,-22px);}
+  }
+
+  /* پروفایل */
+  #profileStats{
+    font-size:0.85rem;
+    margin-top:0.4rem;
+    line-height:1.8;
+  }
+
+  /* برای دسکتاپ کانتینر کمی محدود بشه */
+  @media (min-width:992px){
+    #game-container{
+      max-width:900px;
+      margin:0 auto;
+    }
+  }
+</style>
+
+
+
+
+
+  
 </head>
 <body>
   <!-- هدر: لوگو + عنوان + دکمه‌های شاپ/درباره -->
@@ -747,62 +683,64 @@ const gameContainer = document.getElementById("game-container");
 
 
 
-// ✅ نسخه ریسپانسیو برای موبایل (فول‌قد) و دسکتاپ (معقول)
+// ✅ ریسایز نهایی: بوم = کل فضای باقی‌ماندهٔ صفحه
 function resizeCanvas() {
-  const container = gameContainer || canvas.parentElement;
+  // عرض و ارتفاع واقعی صفحه (فرقی نمی‌کنه ورسل، ایتا، کروم…)
+  const vw = window.innerWidth  || document.documentElement.clientWidth;
+  const vh = window.innerHeight || document.documentElement.clientHeight;
 
-  const styles = window.getComputedStyle(container);
-  const paddingX =
-    parseFloat(styles.paddingLeft) +
-    parseFloat(styles.paddingRight);
-  const paddingY =
-    parseFloat(styles.paddingTop) +
-    parseFloat(styles.paddingBottom);
+  // قدِ اجزای بالا و پایین صفحه
+  const headerH  = document.getElementById("header-bar")?.offsetHeight   || 0;
+  const topH     = document.getElementById("top-bar")?.offsetHeight      || 0;
+  const progH    = document.getElementById("progressWrap")?.offsetHeight || 0;
+  const hintH    = document.getElementById("hint-bar")?.offsetHeight     || 0;
+  const bottomH  = document.getElementById("bottom-bar")?.offsetHeight   || 0;
 
-  let availableWidth  = container.clientWidth  - paddingX;
-  let availableHeight = container.clientHeight - paddingY;
+  // یک فاصله‌ی کوچیک اضافه برای نفس کشیدن
+  const verticalGap = 12;
 
-  // اگر به هر دلیلی height صفر بود (مثلاً هنوز فلکس نگرفته)
-  if (availableHeight <= 0) {
-    availableHeight =
-      (window.innerHeight || document.documentElement.clientHeight) - 180;
+  // ✨ کل فضایی که برای خودِ بازی داریم = قد صفحه منهای بقیه چیزها
+  let availableHeight = vh - (headerH + topH + progH + hintH + bottomH + verticalGap);
+
+  // یه حداقل منطقی که خیلی ریز نشه
+  if (availableHeight < 160) {
+    availableHeight = 160;
   }
 
-  let width, height;
+  // نسبت کانواس (می‌تونی بعداً عوضش کنی)
+  const maxWidth = 520;
+  const ratio    = 1.2;
 
-  if (window.innerWidth <= 768) {
-    // 📱 موبایل: تا جایی که میشه فضای کانتینر رو پر کن
-    width  = availableWidth;
+  // حداکثر عرضی که می‌تونیم استفاده کنیم
+  let maxCanvasWidth = Math.min(vw - 20, maxWidth);
+
+  // اول از روی عرض حساب می‌کنیم
+  let width  = maxCanvasWidth;
+  let height = width * ratio;
+
+  // اگه از قدِ باقی‌مونده بیشتر شد، برعکس حساب می‌کنیم:
+  if (height > availableHeight) {
     height = availableHeight;
-  } else {
-    // 💻 دسکتاپ: محدودیت عرض + نسبت منطقی
-    const maxWidth = 520;
-    const ratio    = 1.2;
-
-    width  = Math.min(availableWidth, maxWidth);
-    height = width * ratio;
-
-    if (height > availableHeight) {
-      height = availableHeight;
-      width  = height / ratio;
-    }
+    width  = height / ratio;
   }
 
   w = width;
   h = height;
 
-  // این خودش کانواس رو پاک می‌کنه و اندازه می‌ده
+  // این خودش کانواس رو پاک و تنظیم می‌کنه
   canvas.width  = w;
   canvas.height = h;
 
-  // تنظیم دوباره پَد و توپ نسبت به اندازه جدید
+  // تنظیم دوباره پد و توپ نسبت به اندازه‌ی جدید
   if (paddle && ball) {
     paddle.y = h - 50;
 
     if (paddle.x + paddle.w > w) {
       paddle.x = w - paddle.w;
     }
-    if (paddle.x < 0) paddle.x = 0;
+    if (paddle.x < 0) {
+      paddle.x = 0;
+    }
 
     if (ball.stuckToPaddle) {
       ball.x = paddle.x + paddle.w / 2;
@@ -814,6 +752,7 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener("orientationchange", resizeCanvas);
+    
     // تم روز/شب
     let currentTheme = "dark";
     function applyTheme(mode){
@@ -1125,66 +1064,76 @@ window.addEventListener("orientationchange", resizeCanvas);
       return size;
     }
 
-    function buildPatternBricks(name,lvl){
-      let grid=[];
-      const scale = brickSizeByLevel(lvl);
-      if(name==="SQUARE"){
-        grid=[
-          "11111111",
-          "11111111",
-          "11111111",
-          "11111111"
-        ];
-      }else if(name==="CIRCLE"){
-        grid=[
-          "000111000",
-          "001111100",
-          "011111110",
-          "011111110",
-          "001111100",
-          "000111000"
-        ];
-      }else if(name==="HEART"){
-        grid=[
-          "00111100111100",
-          "01111111111110",
-          "11111111111111",
-          "11111111111111",
-          "01111111111110",
-          "00111111111100",
-          "00011111111000",
-          "00001111110000",
-          "00000111100000",
-          "00000011000000"
-        ];
+    function buildPatternBricks(name, lvl){
+  let grid = [];
+  const scale = brickSizeByLevel(lvl);
+
+  if(name==="SQUARE"){
+    grid = [
+      "11111111",
+      "11111111",
+      "11111111",
+      "11111111"
+    ];
+  }else if(name==="CIRCLE"){
+    grid = [
+      "000111000",
+      "001111100",
+      "011111110",
+      "011111110",
+      "001111100",
+      "000111000"
+    ];
+  }else if(name==="HEART"){
+    grid = [
+      "00111100111100",
+      "01111111111110",
+      "11111111111111",
+      "11111111111111",
+      "01111111111110",
+      "00111111111100",
+      "00011111111000",
+      "00001111110000",
+      "00000111100000",
+      "00000011000000"
+    ];
+  }
+
+  const rows = grid.length;
+  const cols = grid[0].length;
+
+  const padding = 4;          // فاصله بین آجرها
+  const brickW = (w - (cols + 1) * padding) / cols;
+  const baseH  = 14;
+  const brickH = baseH * scale;
+  const marginTop = 40;
+
+  // ⬅️⬅️ این خط جدید مهمه: عرض کل الگو و شروع از وسط
+  const patternWidth = cols * brickW + (cols - 1) * padding;
+  const startX = (w - patternWidth) / 2;   // شروع الگو از اینجا تا وسط بشه
+
+  const out = [];
+  for(let r = 0; r < rows; r++){
+    for(let c = 0; c < cols; c++){
+      if(grid[r][c] === "1"){
+        const x = startX + c * (brickW + padding);
+        const y = marginTop + r * (brickH + padding);
+        const hits  = 1 + Math.floor(level / 2);
+        const label = randomItem(badWords);
+
+        let type = "normal";
+        const typeRand = Math.random();
+        if(typeRand < 0.1)      type = "ice";
+        else if(typeRand < 0.18) type = "strong";
+        else if(typeRand < 0.24) type = "bomb";
+        else if(typeRand < 0.28) type = "golden";
+
+        out.push({ x, y, w: brickW, h: brickH, hits, label, type });
       }
-      const rows=grid.length;
-      const cols=grid[0].length;
-      const padding=4;
-      const brickW=(w-(cols+1)*padding)/cols;
-      const baseH=14;
-      const brickH=baseH*scale;
-      const marginTop=40;
-      const out=[];
-      for(let r=0;r<rows;r++){
-        for(let c=0;c<cols;c++){
-          if(grid[r][c]==="1"){
-            const x=padding+c*(brickW+padding);
-            const y=marginTop+r*(brickH+padding);
-            const hits=1+Math.floor(level/2);
-            const label=randomItem(badWords);
-            const typeRand=Math.random();
-            let type="normal";
-            if(typeRand<0.1) type="ice";
-            else if(typeRand<0.18) type="strong";
-            else if(typeRand<0.24) type="bomb";
-            else if(typeRand<0.28) type="golden";
-            out.push({x,y,w:brickW,h:brickH,hits,label,type});
-          }
-        }
-      }
-      return out;
     }
+  }
+  return out;
+}
 
     function buildLevel(){
       const name=patternForLevel(level);
