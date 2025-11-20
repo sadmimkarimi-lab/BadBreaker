@@ -868,19 +868,26 @@ function buildLevel() {
         }
       }
       // اگه همه آجرها رفتن → لول بعد
-      if (bricks.length === 0) {
-        level++;
-        ball.stuckToPaddle = true;
-        ball.x = paddle.x + paddle.w / 2;
-        ball.y = paddle.y - ball.r - 1;
-        ball.vx *= 1.08;
-        ball.vy *= 1.08;
-        buildLevel();
-        updateHUD();
-        flashHint("مرحله " + level + " شروع شد ✨", 2000);
-        beep(1000, 0.15);
-      }
-    }
+if (bricks.length === 0) {
+  level++;
+
+  // ✅ هر بار رد کردن مرحله، ۲ تا جون اضافه کن
+  lives += 2;
+  // (اختیاری) محدود کردن حداکثر جون، مثلا ۹ تا
+  if (lives > 9) lives = 9;
+
+  ball.stuckToPaddle = true;
+  ball.x = paddle.x + paddle.w / 2;
+  ball.y = paddle.y - ball.r - 1;
+  ball.vx *= 1.08;
+  ball.vy *= 1.08;
+
+  buildLevel();
+  updateHUD(); // اینجا جون‌های جدید هم تو HUD آپدیت می‌شن
+
+  flashHint("مرحله " + level + " شروع شد؛ ۲ جون تازه گرفتی ❤️", 2500);
+  beep(1000, 0.15);
+}
 
     function draw() {
       ctx.clearRect(0, 0, w, h);
