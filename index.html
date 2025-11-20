@@ -678,44 +678,33 @@ body{
         slowBallTicks=0,burstTicks=0,totalBricksLevel=0,
         totalBrokenHabits=0;
 
-    // 🎯 نسخه ریسپانسیو واقعی: بر اساس خود #game-container، نه window
+    // 🎯 نسخه جدید: بوم، کل فضای وسط صفحه رو پُر می‌کند
 function resizeCanvas() {
   const container = document.getElementById("game-container");
   if (!container) return;
 
-  const ratio   = 1.2;   // نسبت ارتفاع به عرض
-  const padding = 16;    // حاشیه امن دور بازی
-  const maxWidth = 640;  // روی دسکتاپ خیلی غول نشه، روی موبایل کامل میشه
+  const paddingX = 16;   // حاشیه‌ی چپ و راست
+  const paddingY = 8;    // حاشیه‌ی بالا و پایین
 
-  let availableWidth  = container.clientWidth  - padding;
-  let availableHeight = container.clientHeight - padding;
+  let availableWidth  = container.clientWidth  - paddingX;
+  let availableHeight = container.clientHeight - paddingY;
 
-  if (availableWidth <= 0 || availableHeight <= 0) return;
-
-  // روی موبایل معمولاً همین عرض container استفاده میشه
-  availableWidth = Math.min(availableWidth, maxWidth);
-
-  // اول بر اساس عرض، ارتفاع رو حساب می‌کنیم
-  let newW = availableWidth;
-  let newH = newW * ratio;
-
-  // اگه ارتفاع از فضای موجود بیشتر بود، برعکس حساب می‌کنیم
-  if (newH > availableHeight) {
-    newH = availableHeight;
-    newW = newH / ratio;
+  // اگر به هر دلیلی عددها عجیب بود، از کل پنجره استفاده کن
+  if (availableWidth <= 0 || availableHeight <= 0) {
+    availableWidth  = window.innerWidth  - paddingX;
+    availableHeight = window.innerHeight - 220; // حدوداً هدر + نوار پایین
   }
 
-  // ذخیره در متغیرهای سراسری
-  w = newW;
-  h = newH;
+  // ❗ این‌بار نسبت ثابت نمی‌ذاریم؛ همون فضای موجود رو کامل پُر می‌کنیم
+  w = availableWidth;
+  h = availableHeight;
 
-  // ست‌کردن خود canvas
   canvas.width  = w;
   canvas.height = h;
   canvas.style.width  = w + "px";
   canvas.style.height = h + "px";
 
-  // پد و توپ رو نسبت به ارتفاع جدید، درست پایین جا بده
+  // پَد و توپ را در پایین بوم تنظیم کن
   if (paddle && ball) {
     paddle.y = h - 50;
 
@@ -734,6 +723,7 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 window.addEventListener("orientationchange", resizeCanvas);
+ 
     // تم روز/شب
     let currentTheme = "dark";
     function applyTheme(mode){
