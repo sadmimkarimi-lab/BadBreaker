@@ -766,9 +766,582 @@
   </div>
 
   <!-- ===== جاوااسکریپت بازی ===== -->
-  <script>
-    // اینجا منطق بازی، کنترل دکمه‌ها، تم شب/روز، صدا و ... قرار می‌گیرد.
-    // در پیام بعدی، کل منطق JS را کامل برات می‌فرستم تا بازی بدشکن کامل بشه.
-  </script>
+<script>
+  // ==== انتخاب المان‌ها ====
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const livesEl = document.getElementById("livesValue");
+  const scoreEl = document.getElementById("scoreValue");
+  const levelEl = document.getElementById("levelValue");
+  const levelProgressInner = document.getElementById("levelProgressInner");
+
+  const btnStart = document.getElementById("btnStart");
+  const btnPause = document.getElementById("btnPause");
+  const btnSound = document.getElementById("btnSound");
+  const btnTheme = document.getElementById("btnTheme");
+  const btnHelp = document.getElementById("btnHelp");
+  const btnProfile = document.getElementById("btnProfile");
+
+  const messageIcon = document.getElementById("messageIcon");
+  const messageMain = document.getElementById("messageMain");
+  const messageTag = document.getElementById("messageTag");
+
+  const dailyDots = document.querySelectorAll(".daily-dot");
+
+  const bodyEl = document.body;
+
+  // ==== وضعیت بازی ====
+  const MAX_LEVEL = 30;
+
+  let lives = 3;
+  let score = 0;
+  let level = 1;
+
+  let isRunning = false;
+  let isPaused = false;
+  let gameOver = false;
+  let levelCleared = false;
+
+  let soundOn = true;
+  let isLightTheme = false;
+
+  // رکورد ذخیره شده
+  let bestScore = 0;
+  let bestLevel = 0;
+
+  // وضعیت توپ و پد
+  const paddle = {
+    width: 80,
+    height: 12,
+    x: canvas.width / 2 - 40,
+    y: canvas.height - 30,
+    speed: 7
+  };
+
+  const ball = {
+    x: canvas.width / 2,
+    y: canvas.height - 45,
+    radius: 7,
+    dx: 0,
+    dy: 0,
+    speed: 4
+  };
+
+  let bricks = [];
+  let animationId = null;
+
+  // ==== کمک‌ها ====
+
+  function clamp(v, min, max) {
+    return Math.max(min, Math.min(max, v));
+  }
+
+  // سایز آجرها بر اساس لِوِل
+  function getBrickScaleForLevel(level) {
+    if (level <= 10) {
+      // 3 -> 1
+      const t = (level - 1) / 9;
+      return 3 - 2 * t;
+    } else if (level <= 20) {
+      // 2 -> 1
+      const t = (level - 11) / 9;
+      return 2 - 1 * t;
+    } else {
+      // 1.5 -> 1
+      const t = (level - 21) / 9;
+      return 1.5 - 0.5 * t;
+    }
+  }
+
+  // ساخت آرایه آجرها برای هر مرحله
+  function buildBricksForLevel(level) {
+    bricks = [];
+
+    const scale = getBrickScaleForLevel(level);
+    const s = clamp(scale, 1, 3);
+
+    const baseWidth = 36;
+    const baseHeight = 14;
+
+    const brickWidth = baseWidth * s;
+    const brickHeight = baseHeight * s * 0.85;
+    const gap = 4;
+
+    const maxCols = Math.max(
+      3,
+      Math.floor((canvas.width - 30) / (brickWidth + gap))
+    );
+    const cols = maxCols;
+
+    // تعداد ردیف‌ها را هم به scale ربط می‌دیم
+    const rows = 4;
+
+    const totalWidth = cols * brickWidth + (cols - 1) * gap;
+    const offsetX = (canvas.width - totalWidth) / 2;
+    const offsetY = 30;
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = offsetX + c * (brickWidth + gap);
+        const y = offsetY + r * (brickHeight + gap);
+        bricks.push({
+          x,
+          y,
+          width: brickWidth,
+          height: brickHeight,
+          alive: true,
+          color: getBrickColor(level, r)
+        });
+      }
+    }
+  }
+
+  function getBrickColor(level, rowIndex) {
+    // رنگ نسبی بر اساس سطح
+    const baseHue = 30 + level * 2; // بین نارنجی و قرمز
+    const lightness = 40 + rowIndex * 7;
+    return `hsl(${baseHue}, 85%, ${lightness}%)`;
+  }
+
+  // ==== رندر ====
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const grd = ctx.createRadialGradient(
+      canvas.width / 2,
+      0,
+      0,
+      canvas.width / 2,
+      canvas.height / 2,
+      canvas.height
+    );
+    grd.addColorStop(0, "#020617");
+    grd.addColorStop(0.5, "#000000");
+    grd.addColorStop(1, "#020617");
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function drawPaddle() {
+    ctx.save();
+    ctx.fillStyle = "#f97316";
+    ctx.shadowColor = "rgba(249, 115, 22, 0.8)";
+    ctx.shadowBlur = 16;
+    ctx.beginPath();
+    ctx.roundRect(paddle.x, paddle.y, paddle.width, paddle.height, 8);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawBall() {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.fillStyle = "#e5e7eb";
+    ctx.shadowColor = "rgba(248, 250, 252, 0.9)";
+    ctx.shadowBlur = 14;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawBricks() {
+    bricks.forEach((b) => {
+      if (!b.alive) return;
+      ctx.save();
+      ctx.fillStyle = b.color;
+      ctx.shadowColor = "rgba(249, 115, 22, 0.4)";
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.roundRect(b.x, b.y, b.width, b.height, 6);
+      ctx.fill();
+      ctx.restore();
+    });
+  }
+
+  function render() {
+    clearCanvas();
+    drawBricks();
+    drawPaddle();
+    drawBall();
+  }
+
+  // ==== منطق برخورد ====
+
+  function updateBallPosition() {
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    // دیوار چپ/راست
+    if (ball.x + ball.radius > canvas.width) {
+      ball.x = canvas.width - ball.radius;
+      ball.dx *= -1;
+    } else if (ball.x - ball.radius < 0) {
+      ball.x = ball.radius;
+      ball.dx *= -1;
+    }
+
+    // سقف
+    if (ball.y - ball.radius < 0) {
+      ball.y = ball.radius;
+      ball.dy *= -1;
+    }
+
+    // برخورد با پد
+    if (
+      ball.y + ball.radius >= paddle.y &&
+      ball.y + ball.radius <= paddle.y + paddle.height + 4 &&
+      ball.x >= paddle.x &&
+      ball.x <= paddle.x + paddle.width
+    ) {
+      ball.y = paddle.y - ball.radius;
+      const hitPoint = (ball.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
+      const angle = hitPoint * (Math.PI / 3); // حداکثر 60 درجه
+      const speed = ball.speed;
+      ball.dx = speed * Math.sin(angle);
+      ball.dy = -Math.abs(speed * Math.cos(angle));
+    }
+
+    // برخورد با آجرها
+    let bricksAlive = 0;
+    bricks.forEach((b) => {
+      if (!b.alive) return;
+      bricksAlive++;
+
+      if (
+        ball.x + ball.radius > b.x &&
+        ball.x - ball.radius < b.x + b.width &&
+        ball.y + ball.radius > b.y &&
+        ball.y - ball.radius < b.y + b.height
+      ) {
+        // برخورد
+        b.alive = false;
+        score += 10;
+        updateHUD();
+        // جهت
+        ball.dy *= -1;
+      }
+    });
+
+    if (bricksAlive === 0) {
+      handleLevelCleared();
+    }
+
+    // افتادن توپ
+    if (ball.y - ball.radius > canvas.height) {
+      handleLifeLost();
+    }
+  }
+
+  // ==== HUD / وضعیت روی صفحه ====
+
+  function updateHUD() {
+    livesEl.textContent = lives.toString();
+    scoreEl.textContent = score.toString();
+    levelEl.textContent = level.toString();
+
+    const percent = ((level - 1) / (MAX_LEVEL - 1)) * 100;
+    levelProgressInner.style.width = clamp(percent, 0, 100) + "%";
+
+    // نقاط تمرین روزانه – مثلا هر ۵ مرحله یک نقطه
+    const activeCount = clamp(Math.ceil(level / 5), 1, dailyDots.length);
+    dailyDots.forEach((dot, idx) => {
+      if (idx < activeCount) dot.classList.add("active");
+      else dot.classList.remove("active");
+    });
+
+    saveBestRecord();
+  }
+
+  function setMessage(main, tag, icon = "🧠") {
+    messageMain.innerHTML = main;
+    messageTag.innerHTML = tag || "";
+    messageIcon.textContent = icon;
+  }
+
+  // ==== مدیریت جان و سطح ====
+
+  function handleLifeLost() {
+    lives--;
+    if (lives <= 0) {
+      lives = 0;
+      gameOver = true;
+      isRunning = false;
+      cancelAnimationFrame(animationId);
+      setMessage(
+        "بازی تموم شد 💔",
+        "روی ▶️ بزن تا از مرحله ۱ با جان تازه شروع کنیم. سعی کن این بار آجرها رو بیشتر بشکنی.",
+        "💔"
+      );
+      updateHUD();
+      return;
+    }
+
+    setMessage(
+      "توپ افتاد پایین 😅",
+      "یک جون از دست دادی، ولی هنوز می‌تونی ادامه بدی. حواست به زاویه برخورد با پد باشه.",
+      "⚠️"
+    );
+    resetBallAndPaddle(false);
+    updateHUD();
+  }
+
+  function handleLevelCleared() {
+    if (levelCleared) return;
+    levelCleared = true;
+    isRunning = false;
+    cancelAnimationFrame(animationId);
+
+    // اضافه کردن ۲ جان
+    lives += 2;
+
+    setMessage(
+      `مرحله ${level} رو با موفقیت رد کردی 🎉`,
+      "دو تا جون جایزه گرفتی! آماده‌ای بریم مرحله بعدی؟ دوباره روی ▶️ بزن.",
+      "🏅"
+    );
+
+    updateHUD();
+
+    if (level >= MAX_LEVEL) {
+      gameOver = true;
+      setMessage(
+        "تبریک! به انتهای مسیر بدشکن رسیدی 😍",
+        "این‌جا آخر خطه؛ می‌تونی از اول با امتیاز جدید رکورد بزنی.",
+        "🏆"
+      );
+    } else {
+      level++;
+    }
+  }
+
+  function resetBallAndPaddle(resetPositionOnly = true) {
+    paddle.x = canvas.width / 2 - paddle.width / 2;
+    paddle.y = canvas.height - 30;
+
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height - 45;
+
+    const speedBase = 3 + level * 0.15; // کمی سریع‌تر با افزایش مرحله
+    ball.speed = speedBase;
+    ball.dx = speedBase * (Math.random() > 0.5 ? 1 : -1) * 0.6;
+    ball.dy = -Math.abs(speedBase * 0.9);
+  }
+
+  function resetLevel() {
+    buildBricksForLevel(level);
+    resetBallAndPaddle(true);
+    levelCleared = false;
+    gameOver = false;
+    updateHUD();
+  }
+
+  function resetGame() {
+    lives = 3;
+    score = 0;
+    level = 1;
+    gameOver = false;
+    levelCleared = false;
+    resetLevel();
+    setMessage(
+      "بازی از اول شروع شد 🌱",
+      "از مرحله ۱ شروع کردی. هر مرحله رو رد می‌کنی، ۲ جون بهت اضافه می‌شه.",
+      "🧡"
+    );
+  }
+
+  // ==== حلقه اصلی بازی ====
+
+  function gameLoop() {
+    if (!isRunning || isPaused) {
+      return;
+    }
+
+    updateBallPosition();
+    render();
+
+    animationId = requestAnimationFrame(gameLoop);
+  }
+
+  function startOrResumeGame() {
+    if (gameOver) {
+      // از اول
+      resetGame();
+    }
+
+    if (levelCleared && level <= MAX_LEVEL) {
+      resetLevel();
+    }
+
+    if (!isRunning) {
+      isRunning = true;
+      isPaused = false;
+      setMessage(
+        `مرحله ${level} شروع شد 🚀`,
+        "با دقت به آجرها نگاه کن؛ هر چی ریزتر می‌شن، تمرکزت باید بیشتر بشه.",
+        "🚀"
+      );
+      render();
+      gameLoop();
+    }
+  }
+
+  function togglePause() {
+    if (!isRunning || gameOver) {
+      return;
+    }
+    isPaused = !isPaused;
+    if (isPaused) {
+      cancelAnimationFrame(animationId);
+      setMessage(
+        "بازی متوقف شد ⏸️",
+        "برای ادامه دوباره روی ⏸️ بزن تا ادامه بدیم.",
+        "⏸️"
+      );
+    } else {
+      setMessage(
+        "ادامه بازی ▶️",
+        "حالا دوباره تمرکز کن؛ توپ رو از دست نده.",
+        "▶️"
+      );
+      gameLoop();
+    }
+  }
+
+  // ==== ورودی‌ها (موس / لمس) ====
+
+  function movePaddleTo(clientX) {
+    const rect = canvas.getBoundingClientRect();
+    const x = clientX - rect.left;
+    paddle.x = clamp(x - paddle.width / 2, 0, canvas.width - paddle.width);
+  }
+
+  canvas.addEventListener("mousemove", (e) => {
+    movePaddleTo(e.clientX);
+  });
+
+  canvas.addEventListener("touchmove", (e) => {
+    if (e.touches.length > 0) {
+      movePaddleTo(e.touches[0].clientX);
+    }
+  }, { passive: true });
+
+  // حرکت با جهت چپ و راست
+  window.addEventListener("keydown", (e) => {
+    const key = e.key;
+    if (key === "ArrowLeft") {
+      paddle.x = clamp(paddle.x - paddle.speed, 0, canvas.width - paddle.width);
+    } else if (key === "ArrowRight") {
+      paddle.x = clamp(paddle.x + paddle.speed, 0, canvas.width - paddle.width);
+    } else if (key === " ") {
+      // اسپیس = شروع/ادامه
+      e.preventDefault();
+      startOrResumeGame();
+    }
+  });
+
+  // ==== دکمه‌ها ====
+
+  btnStart.addEventListener("click", () => {
+    startOrResumeGame();
+  });
+
+  btnPause.addEventListener("click", () => {
+    togglePause();
+  });
+
+  btnSound.addEventListener("click", () => {
+    soundOn = !soundOn;
+    if (soundOn) {
+      btnSound.classList.remove("muted");
+      btnSound.textContent = "🔊";
+      setMessage("صدا روشن شد 🔊", "فعلاً افکت صوتی ساده است؛ بعداً می‌تونیم صدای جذاب اضافه کنیم.", "🔊");
+    } else {
+      btnSound.classList.add("muted");
+      btnSound.textContent = "🔇";
+      setMessage("صدا قطع شد 🔇", "هر وقت خواستی، دوباره روی آیکون صدا بزن.", "🔇");
+    }
+  });
+
+  btnTheme.addEventListener("click", () => {
+    isLightTheme = !isLightTheme;
+    if (isLightTheme) {
+      bodyEl.classList.add("light");
+      btnTheme.classList.add("day");
+      btnTheme.textContent = "☀️";
+      setMessage(
+        "حالت روز فعال شد ☀️",
+        "پس‌زمینه روشن شد؛ اگر می‌خوای تمرکز شبانه داشته باشی، دوباره روی آیکون بزن.",
+        "☀️"
+      );
+    } else {
+      bodyEl.classList.remove("light");
+      btnTheme.classList.remove("day");
+      btnTheme.textContent = "🌙";
+      setMessage(
+        "حالت شب فعال شد 🌙",
+        "برای بازی در تاریکی و تمرکز بیشتر، حالت شب بهتره.",
+        "🌙"
+      );
+    }
+  });
+
+  btnHelp.addEventListener("click", () => {
+    setMessage(
+      "راهنمای سریع بدشکن 🎯",
+      "توپ رو با پد پایین صفحه نگه دار و سعی کن همه آجرها رو بشکنی. هر مرحله که رد می‌کنی، ۲ جان جایزه می‌گیری. مراحل ۱ تا ۱۰ آجرهای درشت دارن، ۱۱ تا ۲۰ کمی ریزتر، و ۲۱ تا ۳۰ ریزترین حالت. وقتی آماده‌ای، روی ▶️ بزن.",
+      "❓"
+    );
+  });
+
+  function loadBestRecord() {
+    try {
+      const raw = localStorage.getItem("badshkanRecord");
+      if (!raw) return;
+      const rec = JSON.parse(raw);
+      bestScore = rec.bestScore || 0;
+      bestLevel = rec.bestLevel || 0;
+    } catch (e) {
+      bestScore = 0;
+      bestLevel = 0;
+    }
+  }
+
+  function saveBestRecord() {
+    if (score > bestScore) bestScore = score;
+    if (level > bestLevel) bestLevel = level;
+    try {
+      localStorage.setItem(
+        "badshkanRecord",
+        JSON.stringify({ bestScore, bestLevel })
+      );
+    } catch (e) {}
+  }
+
+  btnProfile.addEventListener("click", () => {
+    loadBestRecord();
+    setMessage(
+      "پروفایل و رکورد تو 📊",
+      `بیشترین امتیازت تا حالا: <b>${bestScore}</b> – بالاترین مرحله‌ای که رسیدی: <b>${bestLevel}</b>. هر وقت خواستی، می‌تونی بازی رو از اول شروع کنی و رکورد جدید بزنی.`,
+      "👤"
+    );
+  });
+
+  // ==== شروع اولیه ====
+  function init() {
+    loadBestRecord();
+    resetLevel();
+    updateHUD();
+    render();
+    setMessage(
+      "برای شروع روی ▶️ بزن 💜",
+      "در مراحل ۱ تا ۱۰، آجرها از اندازه ۳ به ۱ کم می‌شن؛ بعدی‌ها ریزتر و شلوغ‌ترن، اما تو قوی‌تر می‌شی.",
+      "🧠"
+    );
+  }
+
+  init();
+</script>
 </body>
 </html>
