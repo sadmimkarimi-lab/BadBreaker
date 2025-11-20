@@ -195,16 +195,16 @@
     }
 
     /* ✅ کانتینر بازی: ارتفاع متناسب با صفحه */
-    #game-container{
+  #game-container{
       width:100%;
       flex-grow:1;
       display:flex;
-      align-items:center;
+      align-items:flex-start;   /* کارت بازی از بالا شروع می‌شود */
       justify-content:center;
-      padding:8px 0 16px;
-      height:calc(100vh - 140px);    /* هدر + نوار وضعیت + نوار پیشرفت + پیام + نوار پایین */
+      padding:0;
+      height:calc(100vh - 140px);
       max-height:calc(100vh - 140px);
-    }
+}
 
     canvas{
       background:#141947;
@@ -661,30 +661,22 @@
   const container = document.getElementById("game-container");
   const rect = container.getBoundingClientRect();
 
-  const maxWidth = 480;          // حداکثر عرض مثل قبل
-  const targetRatio = 1.4;       // نسبت ارتفاع به عرض (کارت خوشگل، نه خیلی دراز)
+  // عرض بازی ← کل عرض موبایل (با حاشیه)
+  w = rect.width * 0.98;
 
-  // عرض بازی
-  w = Math.min(rect.width, maxWidth);
-
-  // ارتفاع ایده‌آل بر اساس نسبت
-  let idealHeight = w * targetRatio;   // مثلا اگر w=360 → h≈504
-
-  // ارتفاع نهایی: از ارتفاع کانتینر بیشتر نشه
-  h = Math.min(idealHeight, rect.height);
+  // ارتفاع بازی ← دقیقاً ارتفاع کل کانتینر
+  h = rect.height;
 
   canvas.width = w;
   canvas.height = h;
 
-  // اگر بازی قبلاً ساخته شده، پد و توپ رو به جای درستشون ببریم
+  // وقتی پد و توپ آماده شدند:
   if (paddle && ball) {
-    paddle.y = h - 40;                 // پد همیشه 40px از پایین
-    if (paddle.x + paddle.w > w) {
-      paddle.x = w - paddle.w;
-    }
+    paddle.y = h - 50;
+
     if (ball.stuckToPaddle) {
       ball.x = paddle.x + paddle.w / 2;
-      ball.y = paddle.y - ball.r - 1;
+      ball.y = paddle.y - ball.r - 2;
     }
   }
 }
