@@ -634,35 +634,36 @@
 
     /* 🔹 ریسایز واقعی بر اساس فضای باقی‌مانده بین بالا و پایین */
     function resizeCanvas(){
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
 
-      const headerEl      = document.getElementById("header-bar");
-      const topBarEl      = document.getElementById("top-bar");
-      const progressWrapEl= document.getElementById("progressWrap");
-      const hintBarEl     = document.getElementById("hint-bar");
-      const bottomBarEl   = document.getElementById("bottom-bar");
+  const headerEl      = document.getElementById("header-bar");
+  const topBarEl      = document.getElementById("top-bar");
+  const progressWrapEl= document.getElementById("progressWrap");
+  const hintBarEl     = document.getElementById("hint-bar");
+  const bottomBarEl   = document.getElementById("bottom-bar");
 
-      let reserved = 0;
-      [headerEl, topBarEl, progressWrapEl, hintBarEl, bottomBarEl].forEach(el=>{
-        if(el) reserved += el.offsetHeight;
-      });
+  let reserved = 0;
+  [headerEl, topBarEl, progressWrapEl, hintBarEl, bottomBarEl].forEach(el=>{
+    if(el) reserved += el.offsetHeight;
+  });
 
-      const verticalPadding = 12;
-      let available = vh - reserved - verticalPadding;
+  // یه کم کوچیک‌ترش می‌کنیم که منوی پایین همیشه تو دید باشه
+  const verticalPadding = 16;
+  let available = (vh - reserved - verticalPadding) * 0.86;
 
-      if(available < 140) available = 140;
-      const maxH = 640;
-      if(available > maxH) available = maxH;
+  if(available < 140) available = 140;
+  const maxH = 640;
+  if(available > maxH) available = maxH;
 
-      const horizontalPadding = 20; // چون container دو طرف 10px پدینگ داره
-      w = Math.min(vw - horizontalPadding, 420);
-      if(w < 200) w = vw * 0.9;
+  const horizontalPadding = 20; // چون container دو طرف 10px پدینگ داره
+  w = Math.min(vw - horizontalPadding, 420);
+  if(w < 200) w = vw * 0.9;
 
-      h = available;
-      canvas.width  = w;
-      canvas.height = h;
-    }
+  h = available;
+  canvas.width  = w;
+  canvas.height = h;
+}
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
