@@ -22,9 +22,9 @@
   }
 
   /* اندازه‌ی پایه متن */
-  html{ font-size:14px; }
+  html{ font-size:15px; }
   @media (min-width:768px){
-    html{ font-size:16px; }
+    html{ font-size:17px; }
   }
   @media (min-width:1200px){
     html{ font-size:18px; }
@@ -90,13 +90,13 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:0.5rem;
+    gap:0.6rem;
     flex-wrap:wrap;
     direction:ltr;
   }
   #header-left{
     display:flex;
-    gap:0.5rem;
+    gap:0.6rem;
     flex-wrap:wrap;
     direction:rtl;
   }
@@ -121,44 +121,44 @@
   /* نوار بالایی وضعیت */
   #top-bar{
     width:100%;
-    padding:0.3rem 0.9rem;
+    padding:0.35rem 0.9rem;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:0.5rem;
+    gap:0.6rem;
     flex-wrap:wrap;
     direction:ltr;
     font-size:0.95rem;
   }
   #top-left{
     display:flex;
-    gap:0.7rem;
+    gap:0.75rem;
     align-items:center;
     direction:rtl;
     flex-wrap:wrap;
   }
   #top-right{
     display:flex;
-    gap:0.3rem;
+    gap:0.35rem;
     align-items:center;
     flex-wrap:wrap;
   }
 
   .iconBtn{
     border:none;
-    padding:0.25rem 0.6rem;
+    padding:0.3rem 0.7rem;
     border-radius:999px;
     background:#2c2e7a;
     color:#fff;
-    font-size:1rem;
+    font-size:1.05rem;
     box-shadow:0 0 6px rgba(0,0,0,.4);
     cursor:pointer;
     white-space:nowrap;
     display:flex;
     align-items:center;
     justify-content:center;
-    min-width:2.2rem;
-    min-height:2.2rem;
+    min-width:2.3rem;
+    min-height:2.3rem;
   }
   .iconBtn:active{transform:scale(.97);}
   body.light-mode .iconBtn{
@@ -170,11 +170,11 @@
   /* نوار پیشرفت */
   #progressWrap{
     width:100%;
-    padding:0 0.9rem 0.35rem;
+    padding:0 0.9rem 0.45rem;
   }
   #progressBarOuter{
     width:100%;
-    height:0.4rem;
+    height:0.6rem; /* پهن‌تر */
     border-radius:999px;
     background:#22244a;
     overflow:hidden;
@@ -190,8 +190,8 @@
   /* نوار پیام */
   #hint-bar{
     width:100%;
-    padding:0.25rem 0.9rem;
-    font-size:0.8rem;
+    padding:0.3rem 0.9rem;
+    font-size:0.9rem; /* بزرگ‌تر */
     direction:rtl;
     color:#e5e7eb;
     opacity:.95;
@@ -200,10 +200,10 @@
     width:100%;
     text-align:right;
     background:#1f2937;
-    padding:0.5rem 0.9rem;
+    padding:0.6rem 1rem; /* کادر بزرگ‌تر */
     border-radius:999px;
     border:1px solid #374151;
-    box-shadow:0 0 8px rgba(0,0,0,.35);
+    box-shadow:0 0 10px rgba(0,0,0,.4);
   }
 
   /* کانتینر بازی */
@@ -226,20 +226,20 @@
   /* نوار پایین */
   #bottom-bar{
     width:100%;
-    padding:0.5rem 0.9rem 0.9rem;
-    font-size:0.8rem;
+    padding:0.55rem 0.9rem 0.9rem;
+    font-size:0.85rem;
     direction:rtl;
     opacity:.9;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    gap:0.5rem;
+    gap:0.6rem;
     flex-wrap:wrap;
     background:rgba(0,0,0,.12);
   }
   #bottom-left{
     display:flex;
-    gap:0.4rem;
+    gap:0.45rem;
     flex-wrap:wrap;
     justify-content:flex-start;
   }
@@ -252,11 +252,11 @@
 
   .btn{
     border:none;
-    padding:0.5rem 1rem;
+    padding:0.55rem 1.1rem;
     border-radius:999px;
     background:#1abc9c;
     color:#fff;
-    font-size:0.95rem;
+    font-size:1rem;
     cursor:pointer;
     box-shadow:0 0 8px rgba(0,0,0,.5);
     white-space:nowrap;
@@ -272,10 +272,10 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:0.5rem;
+    gap:0.6rem;
     background:#161b3c;
     border-radius:999px;
-    padding:0.3rem 0.8rem;
+    padding:0.35rem 0.9rem;
     border:1px solid #272a5e;
     cursor:pointer;
     min-width:11.5rem;
@@ -283,15 +283,15 @@
   #dailyLabel{
     white-space:nowrap;
     opacity:.9;
-    font-size:0.75rem;
+    font-size:0.8rem;
   }
   #dailyDots{
     display:flex;
-    gap:0.25rem;
+    gap:0.28rem;
   }
   .dailyDot{
-    width:0.65rem;
-    height:0.65rem;
+    width:0.7rem;
+    height:0.7rem;
     border-radius:999px;
     border:1px solid #4b5563;
     background:transparent;
@@ -316,32 +316,32 @@
   }
   .box{
     background:#1b144f;
-    padding:1rem;
+    padding:1.05rem;
     border-radius:1rem;
     width:90%;
     max-width:380px;
     box-shadow:0 0 18px rgba(0,0,0,.8);
     direction:rtl;
     text-align:right;
-    font-size:0.85rem;
+    font-size:0.9rem;
     line-height:1.7;
     position:relative;
     color:#f9fafb;
   }
   .box h3{
-    margin-bottom:0.5rem;
-    font-size:1rem;
+    margin-bottom:0.55rem;
+    font-size:1.05rem;
   }
-  .box p{margin:0.25rem 0;}
+  .box p{margin:0.3rem 0;}
   .closeBtn{
-    margin-top:0.6rem;
+    margin-top:0.7rem;
     width:100%;
     border:none;
-    padding:0.5rem 0.9rem;
+    padding:0.55rem 0.9rem;
     border-radius:999px;
     background:#4444aa;
     color:#fff;
-    font-size:0.85rem;
+    font-size:0.9rem;
     cursor:pointer;
     box-shadow:0 0 8px rgba(0,0,0,.5);
   }
@@ -350,19 +350,19 @@
   /* شاپ */
   .shopItem{
     background:#24145f;
-    padding:0.5rem;
-    border-radius:0.6rem;
-    margin:0.4rem 0;
+    padding:0.55rem;
+    border-radius:0.65rem;
+    margin:0.45rem 0;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    font-size:0.85rem;
+    font-size:0.9rem;
     transition:transform .15s ease,box-shadow .15s ease;
   }
   .shopItem span{display:block;}
   .shopItem button{
-    padding:0.25rem 0.7rem;
-    font-size:0.75rem;
+    padding:0.3rem 0.8rem;
+    font-size:0.8rem;
     border:none;
     border-radius:999px;
     background:#ff8c00;
@@ -400,7 +400,7 @@
     top:6px;
     left:50%;
     transform:translateX(-50%);
-    font-size:0.9rem;
+    font-size:0.95rem;
     color:#f97316;
     text-shadow:0 0 6px rgba(0,0,0,.7);
     animation:lifeFloat 1s ease-out forwards;
@@ -415,7 +415,7 @@
 
   /* پروفایل */
   #profileStats{
-    font-size:0.85rem;
+    font-size:0.9rem;
     margin-top:0.4rem;
     line-height:1.8;
   }
@@ -428,7 +428,6 @@
     }
   }
 </style>
-
 
 
 
