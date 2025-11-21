@@ -108,8 +108,8 @@
   }
 
   #gameLogo{
-    width:5rem;
-    height:5rem;
+    width:3.6rem;
+    height:3.6rem;
     border-radius:999px;
     object-fit:cover;
   }
@@ -118,7 +118,7 @@
     font-weight:700;
   }
 
-  /* نوار بالایی وضعیت */
+  /* نوار بالایی وضعیت (مرحله/امتیاز/جان + آیکون‌ها) */
   #top-bar{
     width:100%;
     padding:0.35rem 0.9rem;
@@ -128,7 +128,8 @@
     gap:0.6rem;
     flex-wrap:wrap;
     direction:ltr;
-    font-size:0.95rem;
+    font-size:1.1rem;
+    font-weight:600;
   }
   #top-left{
     display:flex;
@@ -146,19 +147,19 @@
 
   .iconBtn{
     border:none;
-    padding:0.3rem 0.7rem;
+    padding:0.35rem 0.8rem;
     border-radius:999px;
     background:#2c2e7a;
     color:#fff;
-    font-size:1.05rem;
+    font-size:1.15rem;
     box-shadow:0 0 6px rgba(0,0,0,.4);
     cursor:pointer;
     white-space:nowrap;
     display:flex;
     align-items:center;
     justify-content:center;
-    min-width:2.3rem;
-    min-height:2.3rem;
+    min-width:2.5rem;
+    min-height:2.5rem;
   }
   .iconBtn:active{transform:scale(.97);}
   body.light-mode .iconBtn{
@@ -174,7 +175,7 @@
   }
   #progressBarOuter{
     width:100%;
-    height:0.6rem; /* پهن‌تر */
+    height:0.75rem; /* پهن‌تر و چشم‌گیرتر */
     border-radius:999px;
     background:#22244a;
     overflow:hidden;
@@ -191,7 +192,7 @@
   #hint-bar{
     width:100%;
     padding:0.3rem 0.9rem;
-    font-size:0.9rem; /* بزرگ‌تر */
+    font-size:0.9rem;
     direction:rtl;
     color:#e5e7eb;
     opacity:.95;
@@ -200,7 +201,7 @@
     width:100%;
     text-align:right;
     background:#1f2937;
-    padding:0.6rem 1rem; /* کادر بزرگ‌تر */
+    padding:0.6rem 1rem;
     border-radius:999px;
     border:1px solid #374151;
     box-shadow:0 0 10px rgba(0,0,0,.4);
@@ -221,8 +222,8 @@
     border-radius:14px;
     box-shadow:0 0 18px rgba(0,0,0,.7);
     max-width:100%;
-    margin-top:-0.6rem; /* بازی کمی به سمت بالا می‌آید */
-}
+    margin-top:-0.6rem; /* بازی کمی بالاتر، نزدیک پیام */
+  }
 
   /* نوار پایین */
   #bottom-bar{
@@ -305,7 +306,7 @@
     box-shadow:0 0 8px rgba(250,204,21,.8);
   }
 
-  /* اوورلی‌ها */
+  /* اوورلی‌ها (راهنما / شاپ / ... ) */
   .overlay{
     position:fixed;
     inset:0;
@@ -1106,7 +1107,7 @@ window.addEventListener("orientationchange", resizeCanvas);
   const brickW = (w - (cols + 1) * padding) / cols;
   const baseH  = 14;
   const brickH = baseH * scale;
-  const marginTop = 20;
+  const marginTop = 30;
 
   // ⬅️⬅️ این خط جدید مهمه: عرض کل الگو و شروع از وسط
   const patternWidth = cols * brickW + (cols - 1) * padding;
