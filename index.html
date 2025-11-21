@@ -108,8 +108,8 @@
   }
 
   #gameLogo{
-    width:3rem;
-    height:3rem;
+    width:3.6rem;
+    height:3.6rem;
     border-radius:999px;
     object-fit:cover;
   }
@@ -221,7 +221,8 @@
     border-radius:14px;
     box-shadow:0 0 18px rgba(0,0,0,.7);
     max-width:100%;
-  }
+    margin-top:-0.6rem; /* بازی کمی به سمت بالا می‌آید */
+}
 
   /* نوار پایین */
   #bottom-bar{
@@ -1105,7 +1106,7 @@ window.addEventListener("orientationchange", resizeCanvas);
   const brickW = (w - (cols + 1) * padding) / cols;
   const baseH  = 14;
   const brickH = baseH * scale;
-  const marginTop = 40;
+  const marginTop = 20;
 
   // ⬅️⬅️ این خط جدید مهمه: عرض کل الگو و شروع از وسط
   const patternWidth = cols * brickW + (cols - 1) * padding;
