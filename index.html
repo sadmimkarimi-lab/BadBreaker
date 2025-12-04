@@ -168,6 +168,13 @@
     box-shadow:0 0 4px rgba(148,163,184,.6);
   }
 
+  .iconBtn-small{
+    padding:0.25rem 0.6rem;
+    min-width:2.1rem;
+    min-height:2.1rem;
+    font-size:1rem;
+  }
+
   /* نوار پیشرفت */
   #progressWrap{
     width:100%;
@@ -262,6 +269,10 @@
     cursor:pointer;
     box-shadow:0 0 8px rgba(0,0,0,.5);
     white-space:nowrap;
+  }
+  .btn-small{
+    padding:0.4rem 0.9rem;
+    font-size:0.9rem;
   }
   .btn-shop{background:#ff8c00;}
   .btn:active{transform:scale(.97);}
@@ -430,18 +441,14 @@
     }
   }
 </style>
-
-
-
-
-  
 </head>
 <body>
-  <!-- هدر: لوگو + عنوان + دکمه‌های شاپ/درباره -->
+  <!-- هدر: لوگو + عنوان + دکمه‌های شاپ/کانال/بازگشت -->
   <div id="header-bar">
     <div id="header-left">
-      <button id="aboutBtn" class="btn">درباره ما</button>
-      <button id="shopBtn" class="btn btn-shop">شاپ</button>
+      <button id="backBtn" class="iconBtn iconBtn-small" title="بازگشت به برنامه">⟵</button>
+      <button id="tavitaBtn" class="btn btn-small">کانال طاویتا</button>
+      <button id="shopBtn" class="btn btn-shop btn-small">شاپ</button>
     </div>
 
     <div id="header-right">
@@ -635,6 +642,9 @@ const gameContainer = document.getElementById("game-container");
     const profileBtn = document.getElementById("profileBtn");
     const themeBtn = document.getElementById("themeBtn");
     const calmBtn = document.getElementById("calmBtn");
+    // دکمه‌های ویژه طاویتا
+    const tavitaBtn = document.getElementById("tavitaBtn");
+    const backBtn = document.getElementById("backBtn");
     const hintEl = document.getElementById("hint");
     const helpOverlay = document.getElementById("helpOverlay");
     const closeHelpBtn = document.getElementById("closeHelp");
@@ -932,7 +942,9 @@ window.addEventListener("orientationchange", resizeCanvas);
     });
 
     // درباره ما
-    aboutBtn.onclick = ()=>{ aboutOverlay.style.display="flex"; };
+    if (aboutBtn) {
+      aboutBtn.onclick = ()=>{ aboutOverlay.style.display="flex"; };
+    }
     closeAboutBtn.onclick = ()=>{ aboutOverlay.style.display="none"; };
     aboutOverlay.addEventListener("click",e=>{
       if(e.target===aboutOverlay) aboutOverlay.style.display="none";
@@ -1023,8 +1035,6 @@ window.addEventListener("orientationchange", resizeCanvas);
       ctx.quadraticCurveTo(x,y,x+rr,y);
       ctx.closePath();
     }
-
-    
 
     function updateHUD(){
       scoreEl.textContent=score;
@@ -1662,6 +1672,49 @@ window.addEventListener("orientationchange", resizeCanvas);
     requestAnimationFrame(loop);
   </script>
 
-  <script src="/api/eitaa.js"></script>
+  <!-- Eitaa WebApp SDK -->
+  <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
+  <script>
+    (function () {
+      const tavitaBtn = document.getElementById("tavitaBtn");
+      const backBtn   = document.getElementById("backBtn");
+
+      function openInEitaaOrBrowser(url){
+        if (window.Eitaa && window.Eitaa.WebApp){
+          try{
+            window.Eitaa.WebApp.openEitaaLink(url);
+            return;
+          }catch(e){}
+        }
+        window.open(url, "_blank");
+      }
+
+      if (tavitaBtn) {
+        tavitaBtn.addEventListener("click", function () {
+          openInEitaaOrBrowser("https://eitaa.com/tavita");
+        });
+      }
+
+      if (backBtn) {
+        backBtn.addEventListener("click", function () {
+          openInEitaaOrBrowser("https://eitaa.com/bazi_kalamat_app");
+        });
+      }
+
+      if (window.Eitaa && window.Eitaa.WebApp){
+        try{
+          var wa = window.Eitaa.WebApp;
+          wa.ready();
+          wa.expand();
+          if (wa.BackButton) {
+            wa.BackButton.show();
+            wa.BackButton.onClick(function () {
+              wa.close();
+            });
+          }
+        }catch(e){}
+      }
+    })();
+  </script>
 </body>
 </html>
