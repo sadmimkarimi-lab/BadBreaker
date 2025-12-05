@@ -1702,18 +1702,13 @@ window.addEventListener("orientationchange", resizeCanvas);
       }
 
       if (window.Eitaa && window.Eitaa.WebApp){
-        try{
-          var wa = window.Eitaa.WebApp;
-          wa.ready();
-          wa.expand();
-          if (wa.BackButton) {
-            wa.BackButton.show();
-            wa.BackButton.onClick(function () {
-              wa.close();
-            });
-          }
-        }catch(e){}
-      }
+  try{
+    var wa = window.Eitaa.WebApp;
+    wa.ready();
+    wa.expand();
+    // BackButton رو لمس نمی‌کنیم تا رفتار پیش‌فرض ایتا حفظ شود
+  }catch(e){}
+}
     })();
   </script>
 </body>
