@@ -693,6 +693,18 @@ const gameContainer = document.getElementById("game-container");
         totalBrokenHabits=0;
 
 
+// ===================== Floating message (center, non-intrusive) =====================
+let floatMsg = null;
+
+function showFloat(text, duration = 1600) {
+  floatMsg = {
+    text,
+    t0: performance.now(),
+    dur: duration
+  };
+}
+// ===================================================================================
+    
 
 // ✅ ریسایز نهایی: بوم = کل فضای باقی‌ماندهٔ صفحه
 function resizeCanvas() {
@@ -971,17 +983,17 @@ window.addEventListener("orientationchange", resizeCanvas);
       "ترس","خشم","بدقولی","خودکم\u200cبینی","بی\u200cاحترامی"
     ];
     const positiveByLabel = {
-      "تنبلی":"آفرین! همین که شروع کردی یعنی از تنبلی جلو زدی 💪",
-      "دروغ":"راستگویی همیشه سبک‌تره؛ یکی از دروغ‌ها رو ترکوندی ✨",
-      "حسادت":"تمرکز روی رشد خودت، حسادت رو کم می‌کنه 🌱",
-      "غیبت":"کمتر غیبت، یعنی آرامش بیشتر برای دل خودت 💜",
-      "ناامیدی":"همین حالا یک قدم برداشتی؛ ناامیدی کوچیک‌تر شد ✨",
-      "ترس":"شجاعت یعنی با وجود ترس حرکت کنی؛ تو همین کارو کردی 💛",
-      "خشم":"نفس عمیق… تو از خشمت قوی‌تری 🌿",
-      "بدقولی":"همین که حواست به قول‌هات هست، یعنی داری رشد می‌کنی 🤝",
-      "خودکم\u200cبینی":"تو خیلی بیشتر از چیزی که فکر می‌کنی توانایی داری 🌟",
-      "بی\u200cاحترامی":"انتخاب احترام، یعنی احترام به خودت و دیگران 💚"
-    };
+  "تنبلی": "شروع موفقیت",
+  "دروغ": "راستگویی، سعادت",
+  "حسادت": "نجات روح و فکرت",
+  "غیبت": "دوری از تباهی",
+  "ناامیدی": "خدا رو داری",
+  "ترس": "شجاع‌تر شدی",
+  "خشم": "آرامش گنج توست",
+  "بدقولی": "قابل اعتماد شدی",
+  "خودکم\u200cبینی": "تو توانمندی",
+  "بی\u200cاحترامی": "ارزشت بیشتر شد"
+};
     const habitColors = {
       "تنبلی":"#f97316",
       "دروغ":"#ef4444",
@@ -1398,8 +1410,17 @@ window.addEventListener("orientationchange", resizeCanvas);
         ball.y=paddle.y-ball.r-1;
         return;
       }
-      let speedFactor=1;
-      if(slowBallTicks>0) speedFactor*=0.7;
+      let speedFactor = 1;
+
+// 🎯 کندتر فقط مراحل اول
+if (level <= 3) {
+  speedFactor *= 0.75;   // ملایم و دلنشین
+}
+
+// پاورآپ کندکننده
+if (slowBallTicks > 0) {
+  speedFactor *= 0.7;
+}
       ball.x+=ball.vx*speedFactor;
       ball.y+=ball.vy*speedFactor;
 
@@ -1510,6 +1531,7 @@ window.addEventListener("orientationchange", resizeCanvas);
             }
             const posMsg=positiveByLabel[b.label]||`یکی از "${b.label}"‌ها رو شکستی؛ آفرین 💚`;
             flashHint(posMsg,2600);
+            showFloat(posMsg, 900);
             bricks.splice(i,1);
             if(totalBricksLevel>0){
               const cleared=totalBricksLevel-bricks.length;
@@ -1662,7 +1684,57 @@ window.addEventListener("orientationchange", resizeCanvas);
       ctx.strokeStyle=currentTheme==="light" ? "#00000040" : "#ffffff55";
       ctx.lineWidth=1;
       ctx.stroke();
-    }
+
+
+// ======= پیام شناور (بزرگ‌تر + ماندگارتر + غیرمزاحم) =======
+if (floatMsg) {
+  const now = performance.now();
+  const pRaw = (now - floatMsg.t0) / floatMsg.dur;
+
+  if (pRaw >= 1) {
+    floatMsg = null;
+  } else {
+    // حرکت خیلی کم + محوشدن نرم
+    const p = Math.max(0, Math.min(1, pRaw));
+    const alpha = 0.90 * (1 - p * 0.85);          // واضح‌تر و دیرتر محو
+    const fontSize = Math.max(18, Math.floor(w / 18)); // بزرگ‌تر
+    const y = h * 0.45 - p * 8;                    // نزدیک مرکز، کمی رو به بالا
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.direction = "rtl";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.font = `800 ${fontSize}px Vazirmatn`;
+
+    const text = floatMsg.text;
+    const m = ctx.measureText(text);
+
+    // باکس بزرگ‌تر و خواناتر
+    const bw = Math.min(w - 26, m.width + 46);
+    const bh = Math.max(38, fontSize * 1.9);
+    const bx = (w - bw) / 2;
+    const by = y - bh / 2;
+
+    // پس‌زمینه قوی‌تر (ولی هنوز شفاف)
+    ctx.fillStyle = "rgba(0,0,0,0.50)";
+    drawRoundedRect(ctx, bx, by, bw, bh, 999);
+    ctx.fill();
+
+    // حاشیه‌ی خیلی ملایم برای شفافیت بیشتر
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(255,255,255,0.18)";
+    ctx.stroke();
+
+    // متن
+    ctx.fillStyle = "rgba(255,255,255,0.98)";
+    ctx.fillText(text, w / 2, y);
+
+    ctx.restore();
+  }
+}
+// ============================================================
+}
 
     function loop(){
       update();
