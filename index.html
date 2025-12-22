@@ -440,6 +440,63 @@
       margin:0 auto;
     }
   }
+
+  /* =========================
+     ADS UI (فقط تبلیغ - بدون دستکاری بازی)
+     ========================= */
+  .ad-slot{
+    margin-top:0.65rem;
+    background: rgba(0,0,0,.18);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 0.95rem;
+    padding: 0.55rem;
+  }
+  body.light-mode .ad-slot{
+    background: rgba(15,23,42,.06);
+    border-color: rgba(15,23,42,.15);
+  }
+  .ad-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:0.6rem;
+    margin-bottom:0.4rem;
+    opacity:.95;
+    font-size:0.78rem;
+  }
+  .ad-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:.35rem;
+    background: rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.14);
+    padding:.2rem .55rem;
+    border-radius:999px;
+    font-weight:600;
+  }
+  body.light-mode .ad-badge{
+    background: rgba(15,23,42,.06);
+    border-color: rgba(15,23,42,.14);
+  }
+  .ad-cta{
+    opacity:.9;
+    white-space:nowrap;
+  }
+  .ad-image{
+    width:100%;
+    display:block;
+    border-radius:0.85rem;
+    cursor:pointer;
+    user-select:none;
+    -webkit-user-drag:none;
+  }
+  .ad-caption{
+    margin-top:0.45rem;
+    font-size:0.82rem;
+    opacity:.92;
+    text-align:center;
+  }
+  /* ====================================== */
 </style>
 </head>
 <body>
@@ -606,6 +663,17 @@
       <p style="font-size:12px;opacity:.9;">
         می‌تونی دوباره تلاش کنی و عادت‌های بد بیشتری رو بشکنی 😎
       </p>
+
+      <!-- ✅ تبلیغ داخل GameOver (مزاحم بازی نیست) -->
+      <div class="ad-slot">
+        <div class="ad-head">
+          <span class="ad-badge">⭐ اسپانسر</span>
+          <span class="ad-cta">برای مشاهده لمس کن</span>
+        </div>
+        <img id="goAdImg" class="ad-image" src="https://cdnfa.com/irangiah/a9be/uploads/ads/tankads.webp" alt="تبلیغ" />
+        <div class="ad-caption">تبلیغ ویژه</div>
+      </div>
+
       <button id="retryBtn" class="closeBtn">دوباره تلاش کن</button>
     </div>
   </div>
@@ -625,6 +693,24 @@
       <h3>لحظه‌ای آرامش 💙</h3>
       <p>چند نفس عمیق بکش، شانه‌هات رو رها کن و فقط چند ثانیه حرکت توپ رو نگاه کن. همین چند لحظه هم یک تمرین ذهن‌آگاهی و آرامشه 🌿</p>
       <button class="closeBtn" id="closeCalm">بستن</button>
+    </div>
+  </div>
+
+  <!-- ✅ پاپ‌آپ تبلیغ روی Pause (با سقف نمایش؛ مزاحم نیست) -->
+  <div id="adOverlay" class="overlay" style="z-index:9999;">
+    <div class="box">
+      <h3 style="margin-bottom:.35rem;">اسپانسر</h3>
+
+      <div class="ad-slot" style="margin-top:0.25rem;">
+        <div class="ad-head">
+          <span class="ad-badge">⭐ تبلیغ</span>
+          <span class="ad-cta">برای مشاهده لمس کن</span>
+        </div>
+        <img id="adImg" class="ad-image" src="https://cdnfa.com/irangiah/a9be/uploads/ads/tankads.webp" alt="تبلیغ" />
+        <div class="ad-caption">حمایت از بازی‌های طاویتا</div>
+      </div>
+
+      <button class="closeBtn" id="adCloseBtn">بستن</button>
     </div>
   </div>
 
@@ -692,8 +778,86 @@ const gameContainer = document.getElementById("game-container");
         slowBallTicks=0,burstTicks=0,totalBricksLevel=0,
         totalBrokenHabits=0;
 
+    // ===================== ADS SYSTEM (فقط تبلیغ - بدون دستکاری بازی) =====================
+    const AD_CONFIG = {
+      image: "https://cdnfa.com/irangiah/a9be/uploads/ads/tankads.webp",
+      link:  "https://eitaa.com/tavita_ads",
+      minSecondsBetweenShows: 120, // سقف نمایش پاپ‌آپ (کاربر اذیت نشه)
+    };
 
-// ===================== Floating message (center, non-intrusive) =====================
+    const adOverlay  = document.getElementById("adOverlay");
+    const adImg      = document.getElementById("adImg");
+    const adCloseBtn = document.getElementById("adCloseBtn");
+    const goAdImg    = document.getElementById("goAdImg");
+
+    // آمار ساده (برای ارزش تبلیغ)
+    function adStatsKey(k){ return "tavita_ads_" + k; }
+    function bumpStat(k){
+      try{
+        const v = parseInt(localStorage.getItem(adStatsKey(k)) || "0", 10);
+        localStorage.setItem(adStatsKey(k), String(v + 1));
+      }catch(e){}
+    }
+    function canShowAdPopupNow(){
+      try{
+        const last = parseInt(localStorage.getItem(adStatsKey("lastPopupTs")) || "0", 10);
+        const now = Date.now();
+        return (now - last) >= (AD_CONFIG.minSecondsBetweenShows * 1000);
+      }catch(e){
+        return true;
+      }
+    }
+    function markPopupShown(){
+      try{ localStorage.setItem(adStatsKey("lastPopupTs"), String(Date.now())); }catch(e){}
+    }
+
+    // باز کردن لینک در وب‌ویو ایتا (بدون window.open)
+    function openEitaaLinkSafe(url){
+      try{
+        if (window.Eitaa && window.Eitaa.WebApp){
+          const wa = window.Eitaa.WebApp;
+          if (typeof wa.openEitaaLink === "function") { wa.openEitaaLink(url); return; }
+          if (typeof wa.openLink === "function")     { wa.openLink(url);     return; }
+        }
+      }catch(e){}
+      window.location.href = url;
+    }
+
+    function openAdLink(){
+      bumpStat("clicks");
+      openEitaaLinkSafe(AD_CONFIG.link);
+    }
+    function showAdOverlay(){
+      if(!adOverlay) return;
+      if(!canShowAdPopupNow()) return; // سقف نمایش
+      bumpStat("impressions");
+      markPopupShown();
+      adOverlay.style.display = "flex";
+    }
+    function hideAdOverlay(){
+      if(!adOverlay) return;
+      adOverlay.style.display = "none";
+    }
+
+    // ست کردن عکس‌ها (اگر بعداً خواستی تعویض کنی فقط AD_CONFIG رو عوض کن)
+    if(adImg)   adImg.src = AD_CONFIG.image;
+    if(goAdImg) goAdImg.src = AD_CONFIG.image;
+
+    if (adImg)   adImg.addEventListener("click", openAdLink);
+    if (goAdImg) goAdImg.addEventListener("click", ()=>{
+      bumpStat("impressions"); // GameOver هم یک ایمپرشن حساب شه
+      openAdLink();
+    });
+
+    if (adCloseBtn) adCloseBtn.addEventListener("click", hideAdOverlay);
+    if (adOverlay){
+      adOverlay.addEventListener("click", (e)=>{
+        if(e.target === adOverlay) hideAdOverlay();
+      });
+    }
+    // ======================================================================================
+
+    // ===================== Floating message (center, non-intrusive) =====================
 let floatMsg = null;
 
 function showFloat(text, duration = 1600) {
@@ -1293,6 +1457,10 @@ window.addEventListener("orientationchange", resizeCanvas);
       paused=!paused;
       pauseBtn.textContent=paused?"▶️":"⏸";
       flashHint(paused?"بازی متوقف شد ⏸":"ادامه بازی ▶️",1500);
+
+      // ✅ فقط این دو خط تبلیغی اضافه شد (روی Pause)
+      if(paused) showAdOverlay();
+      else hideAdOverlay();
     };
 
     shopBtn.onclick=()=>{
@@ -1356,6 +1524,9 @@ window.addEventListener("orientationchange", resizeCanvas);
       gameOverOverlay.style.display="flex";
       goScore.textContent="امتیاز شما: "+score;
       goLevel.textContent="مرحله‌ای که رسیدی: "+level;
+
+      // ✅ اگر تبلیغ Pause باز بود، هنگام GameOver بسته شود
+      hideAdOverlay();
     }
     retryBtn.onclick=()=>{
       gameOverOverlay.style.display="none";
@@ -1752,13 +1923,15 @@ if (floatMsg) {
       const backBtn   = document.getElementById("backBtn");
 
       function openInEitaaOrBrowser(url){
-        if (window.Eitaa && window.Eitaa.WebApp){
-          try{
-            window.Eitaa.WebApp.openEitaaLink(url);
-            return;
-          }catch(e){}
-        }
-        window.open(url, "_blank");
+        try{
+          if (window.Eitaa && window.Eitaa.WebApp){
+            const wa = window.Eitaa.WebApp;
+            if (typeof wa.openEitaaLink === "function") { wa.openEitaaLink(url); return; }
+            if (typeof wa.openLink === "function")     { wa.openLink(url);     return; }
+          }
+        }catch(e){}
+        // مهم: window.open نکن (وب‌ویو ایتا سخت‌گیر)
+        window.location.href = url;
       }
 
       if (tavitaBtn) {
